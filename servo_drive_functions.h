@@ -14,5 +14,6 @@ Writes the new speed value to the servo
 */
 
 int write_servo (int, volatile int);
+int test_func (int);
 
 #endif

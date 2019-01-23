@@ -27,12 +27,47 @@ int main(void)
     // Both servos max speed forward
     write_servo(4, right_servo);
     write_servo(4, left_servo);
-
+	
+	// Start algorithm here #1
+	
+	/*
+	while (still snow to plow)
+		while (no wall){
+			go forward
+		}
+		turn left (assuming blade is facing right) 90
+		forward x amount (to pass the path of the previous pass)
+		turn left 90
+	}
+	*/
+	
     // Unmap FPGA bridge
     unmap_physical (LW_virtual, LW_BRIDGE_SPAN);
     close_physical (fd);
     return 0;
 }
+
+/* #1 Possible Routing w/ 1 angled blade pointing right (for example)
+	|---------------------------------------|
+	|			v	<						|
+	|			|	^						|
+	|			|	|						|
+	|			|	|						|
+	|			|	|						|
+	|			|	|						|
+	|			|	|						|
+	|			|	|						|
+	|			|	|						|
+	|			|	|						|
+	|			|	|						|
+	|			|	|						|
+	|			|	|						|
+	|			|	|						|			
+	|			>------^					|
+	-----------------------------------------
+	Basically making a spiral out from a middle center line.
+	Always turning the opposite direction of the direction of the blade.
+*/ 
 
 
 

@@ -7,7 +7,11 @@
 #include "sensor_functions.h"
 // TODO: Add to address map
 #define RIGHT_SERVO 0x00000010
-#define LEFT_SERVO 0x00000010
+#define LEFT_SERVO 0x00000018
+#define RIGHT_SERVO_ENCODER 0x00000020
+#define LEFT_SERVO_ENCODER 0x00000028
+#define DIST_SENSOR_1 0x00000030
+#define DIST_SENSOR_2 0x00000038
 
 
 int main(void)
@@ -20,9 +24,13 @@ int main(void)
     return (-1);
     if (!(LW_virtual = map_physical (fd, LW_BRIDGE_BASE, LW_BRIDGE_SPAN)))
     return (-1);
-
-    volatile int * right_servo = (int *) (LW_virtual + RIGHT_SERVO); // virtual address pointer to right servo
-    volatile int * left_servo; (int *) (LW_virtual + RIGHT_SERVO); // virtual address pointer to right servo
+    // Initialize all the nessacary virtual address pointers
+    volatile int * right_servo = (int *) (LW_virtual + RIGHT_SERVO); 
+    volatile int * left_servo = (int *) (LW_virtual + LEFT_SERVO); 
+    volatile int * right_servo_encoder = (int *) (LW_virtual + RIGHT_SERVO_ENCODER); 
+    volatile int * left_servo_encoder = (int *) (LW_virtual + LEFT_SERVO_ENCODER); 
+    volatile int * dist_1 = (int *) (LW_virtual + DIST_SENSOR_1); 
+    volatile int * dist_2 = (int *) (LW_virtual + DIST_SENSOR_1); 
     
     // Both servos max speed forward
     write_servo(4, right_servo);

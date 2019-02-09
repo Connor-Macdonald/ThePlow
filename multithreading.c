@@ -3,6 +3,9 @@
 
 //compile command is gcc thread.c -thread
 
+//Good thread tutorial for pthread.h
+//https://randu.org/tutorials/threads/
+
 //Random thread function for testing
 //void* is used when working with different pointer types
 void* threadFunc(void* args){
@@ -13,21 +16,20 @@ void* threadFunc(void* args){
 
 int main(){
 
-    //creating thread id
-    pthread_t id;
-    int x;
 
+    /*Let's digest the arguments required for pthread_create():
+        pthread_t *thread: the actual thread object that contains pthread id
+        pthread_attr_t *attr: attributes to apply to this thread
+        void *(*start_routine)(void *): the function this thread executes
+        void *arg: arguments to pass to thread function above
+*/
     //creating thread
-    x = pthread_create(&id, NULL,&threadFunc,NULL)
+    int pthread_create(pthread_t *thread, NULL,&threadFunc,NULL)
     if(ret==0){
         printf("thread created");
     }else{
         printf("thread not created");
         return 0;
-    }
-
-    while(1){
-        printf("main function");
     }
 
     return 0;

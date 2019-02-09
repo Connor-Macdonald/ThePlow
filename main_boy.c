@@ -48,7 +48,21 @@ int main(void)
 		turn left 90
 	}
 	*/
+    	
+    // Algorithm #2 (the one we're using)
 	
+	/* turnDir = 1;
+	 * while(still snow to plow){
+	 * 	while(no wall){
+	 * 		go forward;
+	 * 	}
+	 * 	if(turnDir % 2 == 1){
+	 * 		*smart turn left;
+	 * 	}else{
+	 * 		*smart turn right;
+	 * 	}
+	 * }
+
     // Unmap FPGA bridge
     unmap_physical (LW_virtual, LW_BRIDGE_SPAN);
     close_physical (fd);

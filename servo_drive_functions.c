@@ -18,6 +18,28 @@ int read_servo_pos (volatile int encoder_pointer) {
     return theta
 }
 
+int smart_turn_left(volatile int left_pointer, volatile int right_pointer){
+    write_servo(3,left_pointer); // 90 degree turn
+    write_servo(1,right_pointer);
+    // wait x amount of time, now perpendicular to wall
+    write_servo(1,left_pointer);
+    write_servo(1,right_pointer);
+    // pushed the snow out of the way
+    write_servo(3, left_pointer);
+    write_servo(1, right_pointer);
+}
+
+int smart_right_turn(volatile int left_pointer, volatile int right_pointer){
+    write_servo(1,left_pointer);
+    write_servo(3,right_pointer);
+
+    write_servo(1,left_pointer);
+    write_servo(1,right_pointer);
+
+    write_servo(1,left_pointer);
+    write_servo(3,right_pointer);
+}
+
 // forward_nseconds
 	// left_motor_forward_nseconds
 	// right motor_forward_nseconds

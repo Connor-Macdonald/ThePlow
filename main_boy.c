@@ -30,7 +30,10 @@ int main(void)
     volatile int * right_servo_encoder = (int *) (LW_virtual + RIGHT_SERVO_ENCODER); 
     volatile int * left_servo_encoder = (int *) (LW_virtual + LEFT_SERVO_ENCODER); 
     volatile int * dist_1 = (int *) (LW_virtual + DIST_SENSOR_1); 
-    volatile int * dist_2 = (int *) (LW_virtual + DIST_SENSOR_1); 
+    volatile int * dist_2 = (int *) (LW_virtual + DIST_SENSOR_2);
+
+    int maxForward = read_sensor(dist_1); // read at the beginning of the run
+    int maxSide = read_sensor(dist_2); // read at the beginning of the run
     
     // Both servos max speed forward
     write_servo(4, right_servo);
@@ -62,7 +65,24 @@ int main(void)
 	 * 		*smart turn right;
 	 * 	}
 	 * }
+	 */
+    int forward_dist = read_sensor(dist_1);
+    int side_dist = read_sensor(dist_2);
+    int direction = 1;
 
+    while(side_dist > 150){ // change this value
+    	while(forward_dist > 150){ // experimentally determined distance for turning radius
+            forward_dist = read_sensor(dist_1);
+    	}
+        if(direction % 2 == 0){
+	    smart_turn_right();
+	}else{
+	    smart_turn_left();
+	}
+    }
+	
+    
+    
     // Unmap FPGA bridge
     unmap_physical (LW_virtual, LW_BRIDGE_SPAN);
     close_physical (fd);

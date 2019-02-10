@@ -10,7 +10,7 @@
 //void* is used when working with different pointer types
 void* readMem(void* args){
     while(1){
-        printf("test thread");
+        int *data = 0xff7300;
     }
 }
 

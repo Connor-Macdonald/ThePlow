@@ -3,7 +3,6 @@
 
 #define CLOCK_TO_NANO 0.02
 #define NANO_TO_CM 58
-
 /*
 read_distance_sensor
 PARAMETER:

@@ -1,665 +1,319 @@
-//file for reading the accelerometer/gyroscope readings
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/i2c-dev.h>
+#include <linux/i2c.h>
+#include <sys/time.h>
 
-#if ARDUINO >= 100
-#include "Arduino.h"
-#else
-#include "WProgram.h"
-#endif
+/* L3GD20 internal registers */
+#define WHO_AM_I        0x0F
+#define CTRL_REG1       0x20
+#define CTRL_REG2       0x21
+#define CTRL_REG3       0x22
+#define CTRL_REG4       0x23
+#define CTRL_REG5       0x24
+#define REFERENCE       0x25
+#define OUT_TEMP        0x26
+#define STATUS_REG      0x27
+#define OUT_X_L         0x28
+#define OUT_X_H         0x29
+#define OUT_Y_L         0x2A
+#define OUT_Y_H         0x2B
+#define OUT_Z_L         0x2C
+#define OUT_Z_H         0x2D
+#define FIFO_CTRL_REG   0x2E
+#define FIFO_SRC_REG    0x2F
+#define INT1_CFG        0x30
+#define INT1_SRC        0x31
+#define INT1_TSH_XH     0x32
+#define INT1_TSH_XL     0x33
+#define INT1_TSH_YH     0x34
+#define INT1_TSH_YL     0x35
+#define INT1_TSH_ZH     0x36
+#define INT1_TSH_ZL     0x37
+#define INT1_DURATION   0x38
 
-#include <Wire.h>
-#include <limits.h>
+#define GYRO_ADDR       0x6b
+#define AUTO_INCREMENT  0x80
 
-#include "Adafruit_L3GD20_U.h"
+/* calibration values */
+int x_low = 0, y_low = 0, z_low = 0;
+int x_high = 0, y_high = 0, z_high = 0;
 
-TwoWire *_i2c;            ///< Global I2C interface pointer
 
-/***************************************************************************
- PRIVATE FUNCTIONS
- ***************************************************************************/
-
-/**************************************************************************/
-/**
-    @brief  Abstracts away platform differences in Arduino wire library
-
-    @param  reg     The register to write to.
-    @param  value   The value to assign to 'reg'.
-*/
-/**************************************************************************/
-void Adafruit_L3GD20_Unified::write8(byte reg, byte value)
+/*
+ * get_timestamp
+ */
+static unsigned long
+get_timestamp ()
 {
-    _i2c->beginTransmission(L3GD20_ADDRESS);
-#if ARDUINO >= 100
-    _i2c->write((uint8_t)reg);
-    _i2c->write((uint8_t)value);
-#else
-    _i2c->send(reg);
-    _i2c->send(value);
-#endif
-    _i2c->endTransmission();
+    struct timeval tv;
+
+    gettimeofday (&tv,NULL);
+    return tv.tv_sec * 1000000UL + tv.tv_usec;
 }
 
-/**************************************************************************/
-/**
-    @brief  Abstracts away platform differences in Arduino wire library
-
-    @param  reg     The register to read.
-
-    @return The value read from 'reg'.
-*/
-/**************************************************************************/
-byte Adafruit_L3GD20_Unified::read8(byte reg)
+/*
+ * gyro_init
+ */
+static int
+gyro_init (int i2c_fd)
 {
-    byte value;
+    unsigned char init_seq[6];
 
-    _i2c->beginTransmission((byte)L3GD20_ADDRESS);
-#if ARDUINO >= 100
-    _i2c->write((uint8_t)reg);
-#else
-    _i2c->send(reg);
-#endif
-    _i2c->endTransmission();
-    _i2c->requestFrom((byte)L3GD20_ADDRESS, (byte)1);
-#if ARDUINO >= 100
-    value = _i2c->read();
-#else
-    value = _i2c->receive();
-#endif
+    init_seq[0] = (CTRL_REG1 | AUTO_INCREMENT);
+    init_seq[1] = 0xCF; /* CTRL_REG1: normal mode, xyz enable */
+    init_seq[2] = 0x01; /* CTRL_REG2: <default value> */
+    init_seq[3] = 0x00; /* CTRL_REG3: <default value> */
+    init_seq[4] = 0x80; /* CTRL_REG4: 250dps, Block Data Update */
+    init_seq[5] = 0x02; /* CTRL_REG5: <default value> */
 
-    return value;
+    if (write (i2c_fd, init_seq, 6) != 6)
+        return -1;
+
+    return 0;
 }
 
-/***************************************************************************
- CONSTRUCTOR
- ***************************************************************************/
+/*
+ * gyro_get_status
+ */
+static int
+gyro_get_status (int i2c_fd)
+{
+    unsigned char reg_addr = STATUS_REG;
+    unsigned char reg_data[1];
+    int ret;
 
-/**************************************************************************/
-/**
-    @brief  Instantiates a new Adafruit_L3GD20_Unified class
+    struct i2c_msg messages[] =
+            {
+                    {
+                            GYRO_ADDR,              /* slave address */
+                            0,                      /* flags: 0 */
+                            sizeof(reg_addr),       /* transfer size */
+                            &reg_addr               /* data */
+                    },
 
-    @param  sensorID    The unique ID to assign to this sensor instance.
-                        This can be used to distinguish multiple similar
-                        sensors on a system, or to distinguish merged data
-                        in a logging system.
-*/
-/**************************************************************************/
-Adafruit_L3GD20_Unified::Adafruit_L3GD20_Unified(int32_t sensorID) {
-    _sensorID = sensorID;
-    _autoRangeEnabled = false;
+                    {
+                            GYRO_ADDR,              /* slave adddress */
+                            I2C_M_RD,               /* flags: READ */
+                            sizeof(reg_data),       /* transfer size */
+                            reg_data                /* data */
+                    }
+            };
+
+    struct i2c_rdwr_ioctl_data packets =
+            {
+                    messages,                                         /* address of messages */
+                    sizeof(messages) / sizeof(struct i2c_msg)         /* number of messages */
+            };
+
+    ret = ioctl (i2c_fd, I2C_RDWR, &packets);
+    if (ret < 0)
+        return ret;
+
+    return (reg_data[0] & (1 << 3));
 }
 
-/***************************************************************************
- PUBLIC FUNCTIONS
- ***************************************************************************/
-
-/**************************************************************************/
-/**
-    @brief  Setups the HW
-
-    @param  rng     The 'gyroRange_t' to use when configuring the sensor.
-    @param  theWire Optional parameter for the I2C device we will use.
-                    Default is "Wire".
-
-    @return True if the 'begin' process was successful, otherwise false.
-*/
-/**************************************************************************/
-bool Adafruit_L3GD20_Unified::begin(gyroRange_t rng, TwoWire *theWire)
+/*
+ * gyro_get_xyz
+ */
+static int
+gyro_get_xyz (int i2c_fd, float *x, float *y, float *z)
 {
-    /* Set the I2C bus interface. */
-    _i2c = theWire;
+    unsigned char reg_addr = OUT_X_L | AUTO_INCREMENT;
+    unsigned char reg_data[6];
+    int ret;
 
-    /* Enable I2C */
-    _i2c->begin();
+    struct i2c_msg messages[] =
+            {
+                    {
+                            GYRO_ADDR,              /* slave address */
+                            0,                      /* flags: 0 */
+                            sizeof(reg_addr),       /* transfer size */
+                            &reg_addr               /* data */
+                    },
 
-    /* Set the range the an appropriate value */
-    _range = rng;
+                    {
+                            GYRO_ADDR,              /* slave adddress */
+                            I2C_M_RD,               /* flags: READ */
+                            sizeof(reg_data),       /* transfer size */
+                            reg_data                /* data */
+                    }
+            };
 
-    /* Clear the raw sensor data */
-    raw.x = 0;
-    raw.y = 0;
-    raw.z = 0;
+    struct i2c_rdwr_ioctl_data packets =
+            {
+                    messages,                                         /* address of messages */
+                    sizeof(messages) / sizeof(struct i2c_msg)         /* number of messages */
+            };
 
-    /* Make sure we have the correct chip ID since this checks
-       for correct address and that the IC is properly connected */
-    uint8_t id = read8(GYRO_REGISTER_WHO_AM_I);
-    //Serial.println(id, HEX);
-    if ((id != L3GD20_ID) && (id != L3GD20H_ID))
+    ret = ioctl (i2c_fd, I2C_RDWR, &packets);
+    if (ret < 0)
+        return ret;
+
+    *x = (short) (reg_data[0] + ((short)reg_data[1] << 8));
+    *y = (short) (reg_data[2] + ((short)reg_data[3] << 8));
+    *z = (short) (reg_data[4] + ((short)reg_data[5] << 8));
+
+    return 0;
+}
+
+/*
+ * gyro_calib
+ */
+static int
+gyro_calib (int i2c_fd)
+{
+    float x_raw, y_raw, z_raw;
+    int ret;
+
+    for (int i =0 ; i < 200 ; i++)
     {
-        return false;
+        /* check when a new set of data is available */
+        while (!gyro_get_status (i2c_fd));
+
+        /* read xyz raw values */
+        ret = gyro_get_xyz (i2c_fd, &x_raw, &y_raw, &z_raw);
+        if (ret < 0)
+            break;
+
+        /* thresholds for x-axis */
+        if (x_raw > x_high)
+            x_high = x_raw;
+        else if (x_raw < x_low)
+            x_low = x_raw;
+
+        /* thresholds for y-axis */
+        if (y_raw > y_high)
+            y_high = y_raw;
+        else if (y_raw < y_low)
+            y_low = y_raw;
+
+        /* thresholds for z-axis */
+        if (z_raw > z_high)
+            z_high = z_raw;
+        else if (z_raw < z_low)
+            z_low = z_raw;
     }
 
-    /* Set CTRL_REG1 (0x20)
-     ====================================================================
-     BIT  Symbol    Description                                   Default
-     ---  ------    --------------------------------------------- -------
-     7-6  DR1/0     Output data rate                                   00
-     5-4  BW1/0     Bandwidth selection                                00
-       3  PD        0 = Power-down mode, 1 = normal/sleep mode          0
-       2  ZEN       Z-axis enable (0 = disabled, 1 = enabled)           1
-       1  YEN       Y-axis enable (0 = disabled, 1 = enabled)           1
-       0  XEN       X-axis enable (0 = disabled, 1 = enabled)           1 */
+    return ret;
+}
 
-    /* Reset then switch to normal mode and enable all three channels */
-    write8(GYRO_REGISTER_CTRL_REG1, 0x00);
-    write8(GYRO_REGISTER_CTRL_REG1, 0x0F);
-    /* ------------------------------------------------------------------ */
+/*
+ * main
+ */
+int
+main (void)
+{
+    int i2c_fd, ret;
+    float x_raw, y_raw, z_raw;
+    unsigned long pt = 0;
 
-    /* Set CTRL_REG2 (0x21)
-     ====================================================================
-     BIT  Symbol    Description                                   Default
-     ---  ------    --------------------------------------------- -------
-     5-4  HPM1/0    High-pass filter mode selection                    00
-     3-0  HPCF3..0  High-pass filter cutoff frequency selection      0000 */
+    /* actual angles */
+    float angX = 0;
+    float angY = 0;
+    float angZ = 0;
 
-    /* Nothing to do ... keep default values */
-    /* ------------------------------------------------------------------ */
+    /* previous angles for calculation */
+    float p_angX = 0;
+    float p_angY = 0;
+    float p_angZ = 0;
 
-    /* Set CTRL_REG3 (0x22)
-     ====================================================================
-     BIT  Symbol    Description                                   Default
-     ---  ------    --------------------------------------------- -------
-       7  I1_Int1   Interrupt enable on INT1 (0=disable,1=enable)       0
-       6  I1_Boot   Boot status on INT1 (0=disable,1=enable)            0
-       5  H-Lactive Interrupt active config on INT1 (0=high,1=low)      0
-       4  PP_OD     Push-Pull/Open-Drain (0=PP, 1=OD)                   0
-       3  I2_DRDY   Data ready on DRDY/INT2 (0=disable,1=enable)        0
-       2  I2_WTM    FIFO wtrmrk int on DRDY/INT2 (0=dsbl,1=enbl)        0
-       1  I2_ORun   FIFO overrun int on DRDY/INT2 (0=dsbl,1=enbl)       0
-       0  I2_Empty  FIFI empty int on DRDY/INT2 (0=dsbl,1=enbl)         0 */
-
-    /* Nothing to do ... keep default values */
-    /* ------------------------------------------------------------------ */
-
-    /* Set CTRL_REG4 (0x23)
-     ====================================================================
-     BIT  Symbol    Description                                   Default
-     ---  ------    --------------------------------------------- -------
-       7  BDU       Block Data Update (0=continuous, 1=LSB/MSB)         0
-       6  BLE       Big/Little-Endian (0=Data LSB, 1=Data MSB)          0
-     5-4  FS1/0     Full scale selection                               00
-                                    00 = 250 dps
-                                    01 = 500 dps
-                                    10 = 2000 dps
-                                    11 = 2000 dps
-       0  SIM       SPI Mode (0=4-wire, 1=3-wire)                       0 */
-
-    /* Adjust resolution if requested */
-    switch(_range)
+    /* open i2c device */
+    i2c_fd = open ("/dev/i2c-1", O_RDWR);
+    if (i2c_fd < 0)
     {
-        case GYRO_RANGE_250DPS:
-            write8(GYRO_REGISTER_CTRL_REG4, 0x00);
-            break;
-        case GYRO_RANGE_500DPS:
-            write8(GYRO_REGISTER_CTRL_REG4, 0x10);
-            break;
-        case GYRO_RANGE_2000DPS:
-            write8(GYRO_REGISTER_CTRL_REG4, 0x20);
-            break;
+        printf ("Failed to open the i2c bus\n");
+        return EXIT_FAILURE;
     }
-    /* ------------------------------------------------------------------ */
 
-    /* Set CTRL_REG5 (0x24)
-     ====================================================================
-     BIT  Symbol    Description                                   Default
-     ---  ------    --------------------------------------------- -------
-       7  BOOT      Reboot memory content (0=normal, 1=reboot)          0
-       6  FIFO_EN   FIFO enable (0=FIFO disable, 1=enable)              0
-       4  HPen      High-pass filter enable (0=disable,1=enable)        0
-     3-2  INT1_SEL  INT1 Selection config                              00
-     1-0  OUT_SEL   Out selection config                               00 */
-
-    /* Nothing to do ... keep default values */
-    /* ------------------------------------------------------------------ */
-
-    return true;
-}
-
-/**************************************************************************/
-/**
-    @brief  Enables or disables auto-ranging
-
-    @param  enabled Set to 'true' to enable auto-ranging, 'false' to disable.
-*/
-/**************************************************************************/
-void Adafruit_L3GD20_Unified::enableAutoRange(bool enabled)
-{
-    _autoRangeEnabled = enabled;
-}
-
-/**************************************************************************/
-/**
-    @brief  Gets the most recent sensor event, containing a new sample
-            from the sensor.
-
-    @param  event   Pointer to the placeholder where the sensor event data
-                    should be written.
-
-    @return True if the event was successfully read, otherwise false.
-*/
-/**************************************************************************/
-bool Adafruit_L3GD20_Unified::getEvent(sensors_event_t* event)
-{
-    bool readingValid = false;
-
-    /* Clear the event */
-    memset(event, 0, sizeof(sensors_event_t));
-
-    /* Clear the raw data placeholder */
-    raw.x = 0;
-    raw.y = 0;
-    raw.z = 0;
-
-    event->version   = sizeof(sensors_event_t);
-    event->sensor_id = _sensorID;
-    event->type      = SENSOR_TYPE_GYROSCOPE;
-
-    while(!readingValid)
+    /* set slave address */
+    ret = ioctl (i2c_fd, I2C_SLAVE, GYRO_ADDR);
+    if (ret < 0)
     {
-        event->timestamp = millis();
+        printf ("Failed to acquire bus access and/or talk to slave\n");
+        goto exit;
+    }
 
-        /* Read 6 bytes from the sensor */
-        _i2c->beginTransmission((byte)L3GD20_ADDRESS);
-#if ARDUINO >= 100
-        _i2c->write(GYRO_REGISTER_OUT_X_L | 0x80);
-#else
-        _i2c->send(GYRO_REGISTER_OUT_X_L | 0x80);
-#endif
-        if (_i2c->endTransmission() != 0) {
-            // Error. Retry.
+    /* gyro init */
+    ret = gyro_init (i2c_fd);
+    if (ret < 0)
+    {
+        printf ("gyro_init error!\n");
+        goto exit;
+    }
+
+    /* gyro calib */
+    puts ("Calibration...");
+    ret = gyro_calib (i2c_fd);
+    if (ret < 0)
+    {
+        printf ("gyro_calib error!\n");
+        goto exit;
+    }
+
+    /* infinite loop */
+    while (1)
+    {
+        /* check when a new set of data is available */
+        while (!gyro_get_status (i2c_fd));
+
+        /* read xyz raw values */
+        gyro_get_xyz (i2c_fd, &x_raw, &y_raw, &z_raw);
+
+        /* get timestamp */
+        unsigned long ct = get_timestamp();
+        if (pt == 0)
+        {
+            pt = get_timestamp();
             continue;
         }
-        _i2c->requestFrom((byte)L3GD20_ADDRESS, (byte)6);
+        float dt = (float) (ct - pt) / 1000000.0;
+        pt = get_timestamp();
 
-#if ARDUINO >= 100
-        uint8_t xlo = _i2c->read();
-      uint8_t xhi = _i2c->read();
-      uint8_t ylo = _i2c->read();
-      uint8_t yhi = _i2c->read();
-      uint8_t zlo = _i2c->read();
-      uint8_t zhi = _i2c->read();
-#else
-        uint8_t xlo = _i2c->receive();
-        uint8_t xhi = _i2c->receive();
-        uint8_t ylo = _i2c->receive();
-        uint8_t yhi = _i2c->receive();
-        uint8_t zlo = _i2c->receive();
-        uint8_t zhi = _i2c->receive();
-#endif
-
-        /* Shift values to create properly formed integer (low byte first) */
-        event->gyro.x = (int16_t)(xlo | (xhi << 8));
-        event->gyro.y = (int16_t)(ylo | (yhi << 8));
-        event->gyro.z = (int16_t)(zlo | (zhi << 8));
-
-        /* Assign raw values in case someone needs them */
-        raw.x = (int16_t)(xlo | (xhi << 8));
-        raw.y = (int16_t)(ylo | (yhi << 8));
-        raw.z = (int16_t)(zlo | (zhi << 8));
-
-        /* Make sure the sensor isn't saturating if auto-ranging is enabled */
-        if (!_autoRangeEnabled)
+        /* x-axis */
+        if (x_raw >= x_high || x_raw <= x_low)
         {
-            readingValid = true;
+            angX += ((p_angX + (x_raw * 0.00875))/2) * dt;
+            p_angX = x_raw * 0.00875;
         }
         else
+            p_angX = 0;
+
+        /* y-axis */
+        if (y_raw >= y_high || y_raw <= y_low)
         {
-            /* Check if the sensor is saturating or not */
-            if ( (event->gyro.x >= 32760) | (event->gyro.x <= -32760) |
-                 (event->gyro.y >= 32760) | (event->gyro.y <= -32760) |
-                 (event->gyro.z >= 32760) | (event->gyro.z <= -32760) )
-            {
-                /* Saturating .... increase the range if we can */
-                switch(_range)
-                {
-                    case GYRO_RANGE_500DPS:
-                        /* Push the range up to 2000dps */
-                        _range = GYRO_RANGE_2000DPS;
-                        write8(GYRO_REGISTER_CTRL_REG1, 0x00);
-                        write8(GYRO_REGISTER_CTRL_REG1, 0x0F);
-                        write8(GYRO_REGISTER_CTRL_REG4, 0x20);
-                        write8(GYRO_REGISTER_CTRL_REG5, 0x80);
-                        readingValid = false;
-                        // Serial.println("Changing range to 2000DPS");
-                        break;
-                    case GYRO_RANGE_250DPS:
-                        /* Push the range up to 500dps */
-                        _range = GYRO_RANGE_500DPS;
-                        write8(GYRO_REGISTER_CTRL_REG1, 0x00);
-                        write8(GYRO_REGISTER_CTRL_REG1, 0x0F);
-                        write8(GYRO_REGISTER_CTRL_REG4, 0x10);
-                        write8(GYRO_REGISTER_CTRL_REG5, 0x80);
-                        readingValid = false;
-                        // Serial.println("Changing range to 500DPS");
-                        break;
-                    default:
-                        readingValid = true;
-                        break;
-                }
-            }
-            else
-            {
-                /* All values are withing range */
-                readingValid = true;
-            }
+            angY += ((p_angY + (y_raw * 0.00875))/2) * dt;
+            p_angY = y_raw * 0.00875;
         }
-    }
+        else
+            p_angY = 0;
 
-    /* Compensate values depending on the resolution */
-    switch(_range)
-    {
-        case GYRO_RANGE_250DPS:
-            event->gyro.x *= GYRO_SENSITIVITY_250DPS;
-            event->gyro.y *= GYRO_SENSITIVITY_250DPS;
-            event->gyro.z *= GYRO_SENSITIVITY_250DPS;
-            break;
-        case GYRO_RANGE_500DPS:
-            event->gyro.x *= GYRO_SENSITIVITY_500DPS;
-            event->gyro.y *= GYRO_SENSITIVITY_500DPS;
-            event->gyro.z *= GYRO_SENSITIVITY_500DPS;
-            break;
-        case GYRO_RANGE_2000DPS:
-            event->gyro.x *= GYRO_SENSITIVITY_2000DPS;
-            event->gyro.y *= GYRO_SENSITIVITY_2000DPS;
-            event->gyro.z *= GYRO_SENSITIVITY_2000DPS;
-            break;
-    }
-
-    /* Convert values to rad/s */
-    event->gyro.x *= SENSORS_DPS_TO_RADS;
-    event->gyro.y *= SENSORS_DPS_TO_RADS;
-    event->gyro.z *= SENSORS_DPS_TO_RADS;
-
-    return true;
-}
-
-/**************************************************************************/
-/**
-    @brief  Gets the sensor_t data, describing the features of this sensor.
-
-    @param  sensor  The plaxceholder where the 'sensor_t' data should be
-                    written.
-*/
-/**************************************************************************/
-void  Adafruit_L3GD20_Unified::getSensor(sensor_t* sensor)
-{
-    /* Clear the sensor_t object */
-    memset(sensor, 0, sizeof(sensor_t));
-
-    /* Insert the sensor name in the fixed length char array */
-    strncpy (sensor->name, "L3GD20", sizeof(sensor->name) - 1);
-    sensor->name[sizeof(sensor->name)- 1] = 0;
-    sensor->version     = 1;
-    sensor->sensor_id   = _sensorID;
-    sensor->type        = SENSOR_TYPE_GYROSCOPE;
-    sensor->min_delay   = 0;
-    sensor->max_value   = (float)this->_range * SENSORS_DPS_TO_RADS;
-    sensor->min_value   = (this->_range * -1.0) * SENSORS_DPS_TO_RADS;
-    sensor->resolution  = 0.0F; // TBD
-}
-
-
-
-
-/* --- The code below is no longer maintained and provided solely for */
-/* --- compatibility reasons! */
-
-/***************************************************************************
- DEPRECATED (NON UNIFIED) DRIVER (Adafruit_L3GD20.c/h)
- ***************************************************************************/
-
-/***************************************************************************
- CONSTRUCTOR
- ***************************************************************************/
-
-/// @private
-Adafruit_L3GD20::Adafruit_L3GD20(int8_t cs, int8_t miso, int8_t mosi, int8_t clk) {
-    _cs = cs;
-    _miso = miso;
-    _mosi = mosi;
-    _clk = clk;
-}
-
-/// @private
-Adafruit_L3GD20::Adafruit_L3GD20(void) {
-    // use i2c
-    _cs = _mosi = _miso = _clk = -1;
-}
-
-/// @private
-bool Adafruit_L3GD20::begin(l3gd20Range_t rng, byte addr)
-{
-    if (_cs == -1) {
-        _i2c->begin();
-    } else {
-        pinMode(_cs, OUTPUT);
-        pinMode(_clk, OUTPUT);
-        pinMode(_mosi, OUTPUT);
-        pinMode(_miso, INPUT);
-        digitalWrite(_cs, HIGH);
-    }
-
-    address = addr;
-    range = rng;
-
-    /* Make sure we have the correct chip ID since this checks
-       for correct address and that the IC is properly connected */
-    uint8_t id = read8(GYRO_REGISTER_WHO_AM_I);
-    //Serial.println(id, HEX);
-    if ((id != L3GD20_ID) && (id != L3GD20H_ID))
-    {
-        return false;
-    }
-
-    /* Set CTRL_REG1 (0x20)
-     ====================================================================
-     BIT  Symbol    Description                                   Default
-     ---  ------    --------------------------------------------- -------
-     7-6  DR1/0     Output data rate                                   00
-     5-4  BW1/0     Bandwidth selection                                00
-       3  PD        0 = Power-down mode, 1 = normal/sleep mode          0
-       2  ZEN       Z-axis enable (0 = disabled, 1 = enabled)           1
-       1  YEN       Y-axis enable (0 = disabled, 1 = enabled)           1
-       0  XEN       X-axis enable (0 = disabled, 1 = enabled)           1 */
-
-    /* Switch to normal mode and enable all three channels */
-    write8(GYRO_REGISTER_CTRL_REG1, 0x0F);
-    /* ------------------------------------------------------------------ */
-
-    /* Set CTRL_REG2 (0x21)
-     ====================================================================
-     BIT  Symbol    Description                                   Default
-     ---  ------    --------------------------------------------- -------
-     5-4  HPM1/0    High-pass filter mode selection                    00
-     3-0  HPCF3..0  High-pass filter cutoff frequency selection      0000 */
-
-    /* Nothing to do ... keep default values */
-    /* ------------------------------------------------------------------ */
-
-    /* Set CTRL_REG3 (0x22)
-     ====================================================================
-     BIT  Symbol    Description                                   Default
-     ---  ------    --------------------------------------------- -------
-       7  I1_Int1   Interrupt enable on INT1 (0=disable,1=enable)       0
-       6  I1_Boot   Boot status on INT1 (0=disable,1=enable)            0
-       5  H-Lactive Interrupt active config on INT1 (0=high,1=low)      0
-       4  PP_OD     Push-Pull/Open-Drain (0=PP, 1=OD)                   0
-       3  I2_DRDY   Data ready on DRDY/INT2 (0=disable,1=enable)        0
-       2  I2_WTM    FIFO wtrmrk int on DRDY/INT2 (0=dsbl,1=enbl)        0
-       1  I2_ORun   FIFO overrun int on DRDY/INT2 (0=dsbl,1=enbl)       0
-       0  I2_Empty  FIFI empty int on DRDY/INT2 (0=dsbl,1=enbl)         0 */
-
-    /* Nothing to do ... keep default values */
-    /* ------------------------------------------------------------------ */
-
-    /* Set CTRL_REG4 (0x23)
-     ====================================================================
-     BIT  Symbol    Description                                   Default
-     ---  ------    --------------------------------------------- -------
-       7  BDU       Block Data Update (0=continuous, 1=LSB/MSB)         0
-       6  BLE       Big/Little-Endian (0=Data LSB, 1=Data MSB)          0
-     5-4  FS1/0     Full scale selection                               00
-                                    00 = 250 dps
-                                    01 = 500 dps
-                                    10 = 2000 dps
-                                    11 = 2000 dps
-       0  SIM       SPI Mode (0=4-wire, 1=3-wire)                       0 */
-
-    /* Adjust resolution if requested */
-    switch(range)
-    {
-        case GYRO_RANGE_250DPS:
-            write8(GYRO_REGISTER_CTRL_REG4, 0x00);
-            break;
-        case GYRO_RANGE_500DPS:
-            write8(GYRO_REGISTER_CTRL_REG4, 0x10);
-            break;
-        case GYRO_RANGE_2000DPS:
-            write8(GYRO_REGISTER_CTRL_REG4, 0x20);
-            break;
-    }
-    /* ------------------------------------------------------------------ */
-
-    /* Set CTRL_REG5 (0x24)
-     ====================================================================
-     BIT  Symbol    Description                                   Default
-     ---  ------    --------------------------------------------- -------
-       7  BOOT      Reboot memory content (0=normal, 1=reboot)          0
-       6  FIFO_EN   FIFO enable (0=FIFO disable, 1=enable)              0
-       4  HPen      High-pass filter enable (0=disable,1=enable)        0
-     3-2  INT1_SEL  INT1 Selection config                              00
-     1-0  OUT_SEL   Out selection config                               00 */
-
-    /* Nothing to do ... keep default values */
-    /* ------------------------------------------------------------------ */
-
-    return true;
-}
-
-/***************************************************************************
- PUBLIC FUNCTIONS
- ***************************************************************************/
-/// @private
-void Adafruit_L3GD20::read()
-{
-    uint8_t xhi, xlo, ylo, yhi, zlo, zhi;
-
-    if (_cs == -1) {
-        _i2c->beginTransmission(address);
-        // Make sure to set address auto-increment bit
-        _i2c->write(GYRO_REGISTER_OUT_X_L | 0x80);
-        _i2c->endTransmission();
-        _i2c->requestFrom(address, (byte)6);
-
-        xlo = _i2c->read();
-        xhi = _i2c->read();
-        ylo = _i2c->read();
-        yhi = _i2c->read();
-        zlo = _i2c->read();
-        zhi = _i2c->read();
-
-    } else {
-        digitalWrite(_clk, HIGH);
-        digitalWrite(_cs, LOW);
-
-        SPIxfer(GYRO_REGISTER_OUT_X_L | 0x80 | 0x40); // SPI read, autoincrement
-        delay(10);
-        xlo = SPIxfer(0xFF);
-        xhi = SPIxfer(0xFF);
-        ylo = SPIxfer(0xFF);
-        yhi = SPIxfer(0xFF);
-        zlo = SPIxfer(0xFF);
-        zhi = SPIxfer(0xFF);
-
-        digitalWrite(_cs, HIGH);
-    }
-    // Shift values to create properly formed integer (low byte first)
-    data.x = (int16_t)(xlo | (xhi << 8));
-    data.y = (int16_t)(ylo | (yhi << 8));
-    data.z = (int16_t)(zlo | (zhi << 8));
-
-    // Compensate values depending on the resolution
-    switch(range)
-    {
-        case GYRO_RANGE_250DPS:
-            data.x *= GYRO_SENSITIVITY_250DPS;
-            data.y *= GYRO_SENSITIVITY_250DPS;
-            data.z *= GYRO_SENSITIVITY_250DPS;
-            break;
-        case GYRO_RANGE_500DPS:
-            data.x *= GYRO_SENSITIVITY_500DPS;
-            data.y *= GYRO_SENSITIVITY_500DPS;
-            data.z *= GYRO_SENSITIVITY_500DPS;
-            break;
-        case GYRO_RANGE_2000DPS:
-            data.x *= GYRO_SENSITIVITY_2000DPS;
-            data.y *= GYRO_SENSITIVITY_2000DPS;
-            data.z *= GYRO_SENSITIVITY_2000DPS;
-            break;
-    }
-}
-
-/***************************************************************************
- PRIVATE FUNCTIONS
- ***************************************************************************/
-/// @private
-void Adafruit_L3GD20::write8(l3gd20Registers_t reg, byte value)
-{
-    if (_cs == -1) {
-        // use i2c
-        _i2c->beginTransmission(address);
-        _i2c->write((byte)reg);
-        _i2c->write(value);
-        _i2c->endTransmission();
-    } else {
-        digitalWrite(_clk, HIGH);
-        digitalWrite(_cs, LOW);
-
-        SPIxfer(reg);
-        SPIxfer(value);
-
-        digitalWrite(_cs, HIGH);
-    }
-}
-
-/// @private
-byte Adafruit_L3GD20::read8(l3gd20Registers_t reg)
-{
-    byte value;
-
-    if (_cs == -1) {
-        // use i2c
-        _i2c->beginTransmission(address);
-        _i2c->write((byte)reg);
-        _i2c->endTransmission();
-        _i2c->requestFrom(address, (byte)1);
-        value = _i2c->read();
-    } else {
-        digitalWrite(_clk, HIGH);
-        digitalWrite(_cs, LOW);
-
-        SPIxfer((uint8_t)reg | 0x80); // set READ bit
-        value = SPIxfer(0xFF);
-
-        digitalWrite(_cs, HIGH);
-    }
-
-    return value;
-}
-
-/// @private
-uint8_t Adafruit_L3GD20::SPIxfer(uint8_t x) {
-    uint8_t value = 0;
-
-    for (int i=7; i>=0; i--) {
-        digitalWrite(_clk, LOW);
-        if (x & (1<<i)) {
-            digitalWrite(_mosi, HIGH);
-        } else {
-            digitalWrite(_mosi, LOW);
+        /* z-axis */
+        if (z_raw >= z_high || z_raw <= z_low)
+        {
+            angZ += ((p_angZ + (z_raw * 0.00875))/2) * dt;
+            p_angZ = z_raw * 0.00875;
         }
-        digitalWrite(_clk, HIGH);
-        if (digitalRead(_miso))
-            value |= (1<<i);
+        else
+            p_angZ = 0;
+
+        printf ("%.1f %.1f %.1f\n", angX, angY, angZ);
+        fflush (stdout);
     }
 
-    return value;
+    exit:
+    return EXIT_FAILURE;
 }
+root@localhost:~/linux-academy/2-8# gh || z_raw <= z_low)
+-bash: syntax error near unexpected token `)'
+, angX, angY, angZ);
+fflush (stdout);
+}
+
+exit:
+return EXIT_FAILURE;
+}
+

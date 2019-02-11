@@ -17,38 +17,42 @@ int read_servo_pos (volatile int encoder_pointer) {
     int theta = ((duty_cycle - DUTY_CYCLE_MIN) * CIRCLE_UNITS) / (DUTY_CYCLE_MAX - DUTY_CYCLE_MIN + 1); 
     if(theta < 0) theta = 0;
     else if(theta > (unitsFC - 1)) theta = unitsFC - 1;
-    return theta
+    return theta;
 }
 
 
-int smart_turn_right(volatile int left_pointer, volatile int right_pointer){
-    write_servo(3,left_pointer); // 90 degree forward/rotating turn
-    write_servo(1,right_pointer);
-    // wait x amount of time, now perpendicular to wall
-    sleep(1);
-    write_servo(1,left_pointer);
-    write_servo(1,right_pointer);
-    // pushed the snow out of the way
-    sleep(1);
-    write_servo(3, left_pointer); // Rotate on the spot
-    write_servo(0, right_pointer);
-    sleep(1);
-    write_servo(4, left_pointer);
-    write_servo(4,right_pointer);
+void smart_turn_right(volatile int left_pointer, volatile int right_pointer){
+    smart_turn(right_pointer,left_pointer);
 }
 
-int smart_turn_left(volatile int left_pointer, volatile int right_pointer){
-    write_servo(1,left_pointer);
-    write_servo(3,right_pointer);
+void smart_turn_left(volatile int left_pointer, volatile int right_pointer){
+    smart_turn(left_pointer, right_pointer);
+}
+
+void smart_turn(volatile int turn_dir, volatile int other_dir){
+    write_servo(3,other_dir);
+    write_servo(1,turn_dir);
     sleep(1);
-    write_servo(1,left_pointer);
-    write_servo(1,right_pointer);
+    write_servo(1, other_dir);
+    write_servo(1, turn_dir);
     sleep(1);
-    write_servo(1,left_pointer);
-    write_servo(3,right_pointer);
+    write_servo(3,other_dir);
+    write_servo(0,turn_dir);
     sleep(1);
-    write_servo(4,left_pointer);
-    write_servo(4,right_pointer);
+    write_servo(4,turn_dir);
+    write_servo(4,other_dir);
+}
+
+int gyro_read_and_adjust(volatile int gyro_addr, volatile int turn_pointer){
+    float x_raw, y_raw, z_raw;
+    read_servo_pos(); // get where it is pointing now
+    read_gyro(&x_raw, &y_raw, &z_raw);
+    // some shitty math
+    write_servo_angle();
+}
+
+int write_servo_angle(volatile int servo_pointer){
+    // ya boi doesn't know how to do this
 }
 
 // forward_nseconds

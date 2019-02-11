@@ -30,20 +30,20 @@ Reads the duty cycle of the encoder and calculates its angle
 */
 int read_servo_pos (volatile int );
 
-// forward_nseconds(time forwards, left servo pointer, right servo pointer)
-	// left_motor_forward_nseconds
-	// right motor_forward_nseconds
-void forward_nseconds(int, volatile int, volatile int);
+/*
+ * smart_turn_right
+ * PARAMETER:
+ * volatile int left_pointer: pointer to left servo motor
+ * volatile int right_pointer: pointer to right servo motor
+ */
+void smart_turn_right (volatile int, volatile int);
 
-// reverse_nseconds(time backwards, left servo pointer, right servo pointer)
-	// right_motor_reverse_nseconds
-	// left_motor_reverse_nseconds
-void reverse_nseconds(int, volatile int, volatile int);
+void smart_turn_left (volatile int, volatile int);
 
-// turn_n_degrees
-	// if degree > 0 turn left that much
-	// if degree < 0 turn right that much
-void turn_n_degrees(int, volatile int, volatile int);
+void smart_turn (volatile int, volatile int);
 
+void gyro_read_and_adjust(volatile int, volatile int);
+
+void write_servo_angle(volatile int);
 
 #endif

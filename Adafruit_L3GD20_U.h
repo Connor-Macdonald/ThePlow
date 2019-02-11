@@ -4,17 +4,17 @@ File for the reading of the three axis accelerometer
  */
 
 
-#ifndef __L3GD20_H__
-#define __L3GD20_H__
-
-#if (ARDUINO >= 100)
- #include "Arduino.h"
-#else
- #include "WProgram.h"
-#endif
-
-#include <Adafruit_Sensor.h>
-#include <Wire.h>
+//#ifndef __L3GD20_H__
+//#define __L3GD20_H__
+//
+//#if (ARDUINO >= 100)
+// #include "Arduino.h"
+//#else
+// #include "WProgram.h"
+//#endif
+//
+//#include <Adafruit_Sensor.h>
+//#include <Wire.h>
 
 /*=========================================================================
     I2C ADDRESS/BITS AND SETTINGS

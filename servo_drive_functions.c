@@ -17,7 +17,7 @@ int read_servo_pos (volatile int encoder_pointer) {
     int theta = ((duty_cycle - DUTY_CYCLE_MIN) * CIRCLE_UNITS) / (DUTY_CYCLE_MAX - DUTY_CYCLE_MIN + 1); 
     if(theta < 0) theta = 0;
     else if(theta > (unitsFC - 1)) theta = unitsFC - 1;
-    return theta
+    return theta;
 }
 
 

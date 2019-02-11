@@ -5,14 +5,53 @@
 #include "physical_address_access.h"
 #include "servo_drive_functions.h"
 #include "sensor_functions.h"
+#include <pthread.h>
+
 // TODO: Add to address map
 #define RIGHT_SERVO 0x00000010
 #define LEFT_SERVO 0x00000018
 #define RIGHT_SERVO_ENCODER 0x00000020
-#define LEFT_SERVO_ENCODER 0x00000028
-#define DIST_SENSOR_1 0x00000030
-#define DIST_SENSOR_2 0x00000038
+#define LEFT_SERVO_ENCODER 0x00000030
+#define DIST_SENSOR_1 0x00000040
+#define DIST_SENSOR_2 0x00000048
 
+struct globalvariable 
+{
+    /* data */
+    int *xDtata = 0;
+    int *yData = 0;
+};
+
+
+//compile command is gcc thread.c -thread
+
+//Good thread tutorial for pthread.h
+//https://randu.org/tutorials/threads/
+
+//Tutorial on how to pass multiple arguments in threads
+//http://www.cse.cuhk.edu.hk/~ericlo/teaching/os/lab/9-PThread/Pass.html
+
+//Random thread function for testing
+//void* is used when working with different pointer types
+void* routing(void* args){
+    while(1){
+        int *xData = 0xff7300;
+        int *yData = 0xff7300;
+    }
+}
+
+void* positionCalc(void* args){
+    while(1){
+
+        //write to memory
+        *xdata = 300; 
+        *ydata = 300;
+    }
+}
+
+void* sensorPos(void* args){
+
+}
 
 int main(void)
 {
@@ -82,6 +121,41 @@ int main(void)
 	direction++;
     }
 	
+
+
+
+    /*The arguments required for pthread_create():
+        pthread_t *thread: the actual thread object that contains pthread id
+        pthread_attr_t *attr: attributes to apply to this thread
+        void *(*start_routine)(void *): the function this thread executes
+        void *arg: arguments to pass to thread function above
+*/
+    //creating thread
+    int t1 = pthread_create(pthread_t *thread, NULL,&routing,NULL)
+    if(t1==0){
+        printf("thread created");
+    }else{
+        printf("thread not created");
+        return 0;
+    }
+
+      int t2 = pthread_create(pthread_t *thread, NULL,&positionCalc,NULL)
+    if(t2==0){
+        printf("thread created");
+    }else{
+        printf("thread not created");
+        return 0;
+    }
+	    int t3 = pthread_create(pthread_t *thread, NULL,&writeMem,NULL)
+    if(t3==0){
+        printf("thread created");
+    }else{
+        printf("thread not created");
+        return 0;
+    }
+
+
+    return 0;
     
     
     // Unmap FPGA bridge
@@ -111,7 +185,6 @@ int main(void)
 	Basically making a spiral out from a middle center line.
 	Always turning the opposite direction of the direction of the blade.
 */ 
-
 
 
 

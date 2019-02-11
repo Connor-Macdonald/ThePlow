@@ -1,9 +1,10 @@
 #ifndef servo_drive_func
 #define servo_drive_func
 
-#define SPEED_HIGH 4
-#define SPEED_LOW -4
+#define SPEED_HIGH 16
+#define SPEED_LOW -16
 
+#define ENCODER_PERIOD 1099
 #define DUTY_CYCLE_MIN 29
 #define DUTY_CYCLE_MAX 971
 #define CIRCLE_UNITS 360
@@ -28,5 +29,21 @@ OUTPUT: angle of servo at time requested
 Reads the duty cycle of the encoder and calculates its angle 
 */
 int read_servo_pos (volatile int );
+
+// forward_nseconds(time forwards, left servo pointer, right servo pointer)
+	// left_motor_forward_nseconds
+	// right motor_forward_nseconds
+void forward_nseconds(int, volatile int, volatile int);
+
+// reverse_nseconds(time backwards, left servo pointer, right servo pointer)
+	// right_motor_reverse_nseconds
+	// left_motor_reverse_nseconds
+void reverse_nseconds(int, volatile int, volatile int);
+
+// turn_n_degrees
+	// if degree > 0 turn left that much
+	// if degree < 0 turn right that much
+void turn_n_degrees(int, volatile int, volatile int);
+
 
 #endif

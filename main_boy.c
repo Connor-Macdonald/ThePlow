@@ -64,19 +64,19 @@ int main(void)
     if (!(LW_virtual = map_physical (fd, LW_BRIDGE_BASE, LW_BRIDGE_SPAN)))
     return (-1);
     // Initialize all the nessacary virtual address pointers
-    volatile int * right_servo = (int *) (LW_virtual + RIGHT_SERVO); 
-    volatile int * left_servo = (int *) (LW_virtual + LEFT_SERVO); 
-    volatile int * right_servo_encoder = (int *) (LW_virtual + RIGHT_SERVO_ENCODER); 
-    volatile int * left_servo_encoder = (int *) (LW_virtual + LEFT_SERVO_ENCODER); 
-    volatile int * dist_1 = (int *) (LW_virtual + DIST_SENSOR_1); 
+    volatile int * right_servo = (int *) (LW_virtual + RIGHT_SERVO); // Write value -16 10 16
+    volatile int * left_servo = (int *) (LW_virtual + LEFT_SERVO);  // note left and right will be oposite
+    volatile int * right_servo_encoder = (int *) (LW_virtual + RIGHT_SERVO_ENCODER);  // Use read_servo_pos to get angle  
+    volatile int * left_servo_encoder = (int *) (LW_virtual + LEFT_SERVO_ENCODER); // note left and right will be oposite
+    volatile int * dist_1 = (int *) (LW_virtual + DIST_SENSOR_1); // Read using read_distance_sensor to get cm
     volatile int * dist_2 = (int *) (LW_virtual + DIST_SENSOR_2);
 
     int maxForward = read_distance_sensor(dist_1); // read at the beginning of the run
     int maxSide = read_distance_sensor(dist_2); // read at the beginning of the run
     
     // Both servos max speed forward
-    write_servo(4, right_servo);
-    write_servo(4, left_servo);
+    write_servo(16, right_servo);
+    write_servo(16, left_servo);
 	
 	// Start algorithm here #1
 	

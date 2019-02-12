@@ -3,7 +3,7 @@
 
 // NOTE: left and right must be opposite
 int write_servo (int speed, volatile int *servo_pointer){
-    if( speed >= -16 && speed <= 16){
+    if( speed >= SPEED_LOW && speed <= SPEED_HIGH){
         // Success write speed
         *servo_pointer = speed;
         return 1;
@@ -15,12 +15,11 @@ int write_servo (int speed, volatile int *servo_pointer){
 
 float read_servo_pos (volatile int *encoder_pointer) {
     int unitsFC = 360;
-    float high_micro = (*encoder_pointer) / 100;
+    float high_micro = (*encoder_pointer) / 50;
     float duty_cycle = 100 * (high_micro / ENCODER_PERIOD);
-    float theta = (((duty_cycle - DUTY_CYCLE_MIN) * CIRCLE_UNITS) / (DUTY_CYCLE_MAX - DUTY_CYCLE_MIN + 1))+10;
+    float theta = ((duty_cycle - DUTY_CYCLE_MIN) * CIRCLE_UNITS) / (DUTY_CYCLE_MAX - DUTY_CYCLE_MIN + 1);
     printf("angle: %d\n",theta); 
     if(theta < 0){
-        printf("THETA TO 0: PREVIOUS: %f",theta);
         theta = 0;
     } 
     else if(theta > (unitsFC - 1)) theta = unitsFC - 1;

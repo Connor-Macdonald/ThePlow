@@ -1,8 +1,8 @@
 #ifndef servo_drive_func
 #define servo_drive_func
 
-#define SPEED_HIGH 16
-#define SPEED_LOW -16
+#define SPEED_HIGH 100
+#define SPEED_LOW -100
 
 #define ENCODER_PERIOD 1099
 #define DUTY_CYCLE_MIN 2.9

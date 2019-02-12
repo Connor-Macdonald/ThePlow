@@ -41,6 +41,9 @@ void* is used when working with different pointer types
 */
 void *routing(void *num){
     int *x = (int *)num;
+    int i =0;
+    //printf("im here in thread 1\n");
+    for(i =0;i<50;i++){
     printf("Thread 1 works! %d\n", *x);
     /*
     while(1){
@@ -49,11 +52,15 @@ void *routing(void *num){
         printf("Thread 1 works! %d\n", num);
     }
     */
+   sleep(1);
+    }
 }
 
 void *positionCalc(void *num2){
+    int i = 0;
+    
     int *x = (int *)num2;
-    printf("Thread 2 works! %d\n", *x);
+    printf("Thread 2 works||||||||||||||||||||||||||||||||||! %d\n", *x);
     /*
     while(1){
 
@@ -62,11 +69,12 @@ void *positionCalc(void *num2){
         *ydata = 300;
     }
     */
+    
 }
 
 void *sensorPos(void *num3){
     int *x = (int *)num3;
-    printf("Thread 3 works! %d\n", *x);
+    printf("Thread 3 works|||||||||||||||||||||||||||||||||||! %d\n", *x);
 }
 
 
@@ -118,44 +126,59 @@ int main(void)
     */
 
     //NOTE: when compiling: gcc main_boy.c -o main_boy -lpthread
-
+    printf("calling 1\n");
     //creating thread 1
 	pthread_t thread1;
     int x =1;
-    if(pthread_create(&thread1, NULL, routing, &x)){
-        fprintf(stderr, "Error creating thread\n");
-        return 1;
+    pthread_create(&thread1, NULL, routing, &x);
+
+    /*
+    if(pthread_join(thread1, NULL)) {
+        fprintf(stderr, "Error joining thread\n");
+        return 2;
+
     }
+    */
+    printf("calling 2\n");
+    //creating thread 2
+	pthread_t thread2;
+    int y =2;
+    pthread_create(&thread2, NULL, positionCalc, &y);
+
+
+    /*
+    if(pthread_join(thread2, NULL)) {
+        fprintf(stderr, "Error joining thread\n");
+        return 2;
+
+    }
+    */
+
+   printf("calling 3\n");
+   //creating thread 3
+	pthread_t thread3;
+    int z =3;
+    pthread_create(&thread3, NULL, sensorPos, &z);
+
+    /*
+    if(pthread_join(thread3, NULL)) {
+        fprintf(stderr, "Error joining thread\n");
+        return 2;
+
+    }
+    */
 
     if(pthread_join(thread1, NULL)) {
         fprintf(stderr, "Error joining thread\n");
         return 2;
 
     }
-    
-    //creating thread 2
-	pthread_t thread2;
-    int y =2;
-    if(pthread_create(&thread2, NULL, positionCalc, &y)){
-        fprintf(stderr, "Error creating thread\n");
-        return 1;
-    }
-
     if(pthread_join(thread2, NULL)) {
         fprintf(stderr, "Error joining thread\n");
         return 2;
 
     }
-
-   //creating thread 3
-	pthread_t thread3;
-    int z =3;
-    if(pthread_create(&thread3, NULL, sensorPos, &z)){
-        fprintf(stderr, "Error creating thread\n");
-        return 1;
-    }
-
-    if(pthread_join(thread3, NULL)) {
+      if(pthread_join(thread3, NULL)) {
         fprintf(stderr, "Error joining thread\n");
         return 2;
 
@@ -165,6 +188,8 @@ int main(void)
     unmap_physical (LW_virtual, LW_BRIDGE_SPAN);
     close_physical (fd);
     return 0;
+
+   
 }
 
 /* #1 Possible Routing w/ 1 angled blade pointing right (for example)

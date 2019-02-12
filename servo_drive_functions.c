@@ -4,7 +4,7 @@
 // NOTE: left and right must be opposite
 int write_servo (int speed, volatile int *servo_pointer){
     if (speed >= SPEED_HIGH){
-        speed = SPEED_HIGH
+        speed = SPEED_HIGH;
     }
     if( speed >= SPEED_LOW && speed <= SPEED_HIGH){
         // Success write speed
@@ -21,7 +21,7 @@ float read_servo_pos (volatile int *encoder_pointer) {
     float high_micro = (*encoder_pointer) / 50;
     float duty_cycle = 100 * (high_micro / ENCODER_PERIOD);
     float theta = ((duty_cycle - DUTY_CYCLE_MIN) * CIRCLE_UNITS) / (DUTY_CYCLE_MAX - DUTY_CYCLE_MIN + 1);
-    printf("angle: %d\n",theta); 
+    printf("angle: %f\n",theta); 
     if(theta < 0){
         theta = 0;
     } 
@@ -29,6 +29,7 @@ float read_servo_pos (volatile int *encoder_pointer) {
     return theta;
 }
 
+/*
 void drive_straight (int inpspeed){
     float theta_r = read_servo_pos(right_servo_encoder);
     float theta_l = read_servo_pos(left_servo_encoder);
@@ -55,6 +56,7 @@ void drive_straight (int inpspeed){
     write_servo(-inpspeed, left_servo);
     write_servo(r_speed, right_servo);
 }
+*/
 
 
 

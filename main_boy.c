@@ -20,6 +20,7 @@
 #define DIST_SENSOR_1 0x00000040
 #define DIST_SENSOR_2 0x00000048
 
+int x;
 
 //struct globalvariable 
 //{
@@ -40,11 +41,12 @@ Random thread function for testing
 void* is used when working with different pointer types
 */
 void *routing(void *num){
-    int *x = (int *)num;
+    //int *p = (int *)num;
     int i =0;
     //printf("im here in thread 1\n");
     for(i =0;i<50;i++){
-    printf("Thread 1 works! %d\n", *x);
+        x = i;
+    printf("Thread 1 works! %d\n", x);
     /*
     while(1){
         //int *xData = 0xff7300;
@@ -59,8 +61,9 @@ void *routing(void *num){
 void *positionCalc(void *num2){
     int i = 0;
     
-    int *x = (int *)num2;
-    printf("Thread 2 works||||||||||||||||||||||||||||||||||! %d\n", *x);
+    //int *o = (int *)num2;
+    for(i=0;i<50;i++){
+    printf("Thread 2 works! %d\n", x);
     /*
     while(1){
 
@@ -69,12 +72,13 @@ void *positionCalc(void *num2){
         *ydata = 300;
     }
     */
-    
+   sleep(1);
+    }
 }
 
 void *sensorPos(void *num3){
     int *x = (int *)num3;
-    printf("Thread 3 works|||||||||||||||||||||||||||||||||||! %d\n", *x);
+    printf("Thread 3 works! %d\n", *x);
 }
 
 
@@ -129,8 +133,7 @@ int main(void)
     printf("calling 1\n");
     //creating thread 1
 	pthread_t thread1;
-    int x =1;
-    pthread_create(&thread1, NULL, routing, &x);
+    pthread_create(&thread1, NULL, routing, NULL);
 
     /*
     if(pthread_join(thread1, NULL)) {
@@ -142,8 +145,7 @@ int main(void)
     printf("calling 2\n");
     //creating thread 2
 	pthread_t thread2;
-    int y =2;
-    pthread_create(&thread2, NULL, positionCalc, &y);
+    pthread_create(&thread2, NULL, positionCalc, NULL);
 
 
     /*

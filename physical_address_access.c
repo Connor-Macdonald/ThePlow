@@ -1,4 +1,6 @@
 #include "physical_address_access.h"
+#include <fcntl.h> // for open
+#include <unistd.h> // for close
 
 /* Open /dev/mem to give access to physical addresses */
 int open_physical (int fd)
@@ -14,7 +16,7 @@ return fd;
 /* Close /dev/mem to give access to physical addresses */
 void close_physical (int fd)
 {
-close (fd);
+    close(fd);
 }
 /* Establish a virtual address mapping for the physical addresses starting
 * at base and extending by span bytes */
@@ -27,7 +29,7 @@ fd, base);
 if (virtual_base == MAP_FAILED)
 {
 printf ("ERROR: mmap() failed...\n");
-close (fd);
+close(fd);
 return (NULL);
 }
 return virtual_base;

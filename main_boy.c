@@ -97,6 +97,22 @@ int main(void)
 		write_servo(0, right_servo);
 		write_servo(0, left_servo);
 		printf("Reading greater than 3 cm\n");
+    int maxForward = read_distance_sensor(dist_1); // read at the beginning of the run
+    int maxSide = read_distance_sensor(dist_2); // read at the beginning of the run
+    
+    // Both servos max speed forward
+    write_servo(16, right_servo);
+    write_servo(16, left_servo);
+	// Start algorithm here #1
+	
+	/*
+	while (still snow to plow)
+		while (no wall){
+			go forward
+		}
+		turn left (assuming blade is facing right) 90
+		forward x amount (to pass the path of the previous pass)
+		turn left 90
 	}
 	*/
 

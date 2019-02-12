@@ -3,6 +3,9 @@
 
 // NOTE: left and right must be opposite
 int write_servo (int speed, volatile int *servo_pointer){
+    if (speed >= SPEED_HIGH){
+        speed = SPEED_HIGH
+    }
     if( speed >= SPEED_LOW && speed <= SPEED_HIGH){
         // Success write speed
         *servo_pointer = speed;
@@ -25,6 +28,36 @@ float read_servo_pos (volatile int *encoder_pointer) {
     else if(theta > (unitsFC - 1)) theta = unitsFC - 1;
     return theta;
 }
+
+void drive_straight (int inpspeed){
+    float theta_r = read_servo_pos(right_servo_encoder);
+    float theta_l = read_servo_pos(left_servo_encoder);
+    delay(20); // delay equivalent to the write freq of control sig of servo @ 50 Hz
+
+    // need to deal with edge cases where transition from 360 - 0
+
+
+    float theta_r_diff = read_servo_pos(right_servo_encoder) - theta_r;
+    float theta_l_diff = read_servo_pos(left_servo_encoder) - theta_l;
+    printf("angle diff right: %f", theta_r_diff);
+    printf("angle diff left: %f", theta_l_diff)
+
+    // set speed difference to be proportionate to difference between wheels
+    if (theta_r_diff > theta_l_diff){
+        float speed_multiplier = 100 * (theta_r_diff - theta_l_diff) / theta_l_diff;
+        int r_speed = inpspeed * (1 + speed_multiplier*0.3);
+    }
+    else{
+        float speed_multiplier = (theta_l_diff - theta_r_diff) / theta_r_diff;
+        int r_speed = inpspeed * (1 - speed_multiplier*0.3);
+    }
+
+    write_servo(-inpspeed, left_servo);
+    write_servo(r_speed, right_servo);
+}
+
+
+
 
 /*
 // first input is the pointer to the wheel which is the direction of turning

@@ -63,7 +63,7 @@ int main(void)
     return (-1);
     if (!(LW_virtual = map_physical (fd, LW_BRIDGE_BASE, LW_BRIDGE_SPAN)))
     return (-1);
-    // Initialize all the nessacary virtual address pointers
+    // Initialize all the necessary virtual address pointers
     volatile int * right_servo = (int *) (LW_virtual + RIGHT_SERVO); // Write value -16 10 16
     volatile int * left_servo = (int *) (LW_virtual + LEFT_SERVO);  // note left and right will be oposite
     volatile int * right_servo_encoder = (int *) (LW_virtual + RIGHT_SERVO_ENCODER);  // Use read_servo_pos to get angle  
@@ -89,7 +89,7 @@ int main(void)
 		turn left 90
 	}
 	*/
-    	
+
     // Algorithm #2 (the one we're using)
 	
 	/* turnDir = 1;

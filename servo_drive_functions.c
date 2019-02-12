@@ -3,6 +3,8 @@
 
 // NOTE: left and right must be opposite
 int write_servo (int speed, volatile int *servo_pointer){
+    //if *servo_pointer ==
+
     if (speed >= SPEED_HIGH){
         speed = SPEED_HIGH
     }
@@ -36,11 +38,15 @@ void drive_straight (int inpspeed){
 
     // need to deal with edge cases where transition from 360 - 0
 
+    CIRCLE_UNITS
 
     float theta_r_diff = read_servo_pos(right_servo_encoder) - theta_r;
     float theta_l_diff = read_servo_pos(left_servo_encoder) - theta_l;
     printf("angle diff right: %f", theta_r_diff);
     printf("angle diff left: %f", theta_l_diff)
+
+    if theta_r_diff > 300 && theta_r
+
 
     // set speed difference to be proportionate to difference between wheels
     if (theta_r_diff > theta_l_diff){

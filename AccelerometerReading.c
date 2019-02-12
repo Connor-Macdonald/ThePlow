@@ -35,7 +35,7 @@
 #define INT1_TSH_ZL     0x37
 #define INT1_DURATION   0x38
 
-#define GYRO_ADDR       0x6b
+#define GYRO_ADDR       0xd4
 #define AUTO_INCREMENT  0x80
 
 /* calibration values */

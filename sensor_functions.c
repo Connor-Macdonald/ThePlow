@@ -2,6 +2,7 @@
 
 
 float read_distance_sensor(volatile int *sensor_pointer){
-    float dist = ((*sensor_pointer) / CLOCK_TO_NANO) / NANO_TO_CM;
+        printf("Sensor pointer %f\n", *sensor_pointer);
+        float dist = ((*sensor_pointer) / CLOCK_TO_NANO) / NANO_TO_CM;
     return dist;
 }

@@ -91,7 +91,7 @@ int main(void)
 	}
 	*/
 
-
+    /*
     write_servo(0, right_servo);
     write_servo(0, left_servo);
     
@@ -106,7 +106,15 @@ int main(void)
    		theta_right = read_servo_pos(right_servo_encoder);
    		theta_left = read_servo_pos(left_servo_encoder);
    	}
-    
+	*/
+while(1){
+    float dist1 = read_distance_sensor(dist_1);
+    float dist2 = read_distance_sensor(dist_2);
+
+    printf("Distance sensor #1: %f\n", dist1);
+    printf("Distance sensor #2: %f\n", dist2);
+    sleep(1);
+}
 
     /*The arguments required for pthread_create():
         pthread_t *thread: the actual thread object that contains pthread id

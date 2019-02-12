@@ -87,61 +87,26 @@ int main(void)
     volatile int * dist_1 = (int *) (LW_virtual + DIST_SENSOR_1); 
     volatile int * dist_2 = (int *) (LW_virtual + DIST_SENSOR_2);
 
-    /*
-    //this code makes it go straight
-    /*
-    printf("deeeeeeeeeeeeeez nuts");
-	int i =0;
-	for (i = 0; i<1000;i++){
-		    // Both servos max speed forward
-		write_servo(0, right_servo);
-		write_servo(0, left_servo);
-		printf("Reading greater than 3 cm\n");
-    int maxForward = read_distance_sensor(dist_1); // read at the beginning of the run
-    int maxSide = read_distance_sensor(dist_2); // read at the beginning of the run
     
-    // Both servos max speed forward
-    write_servo(16, right_servo);
-    write_servo(16, left_servo);
-	// Start algorithm here #1
 	
-	/*
-	while (still snow to plow)
-		while (no wall){
-			go forward
-		}
-		turn left (assuming blade is facing right) 90
-		forward x amount (to pass the path of the previous pass)
-		turn left 90
-	}
-	*/
 
-    /*
+    /* Code to make it move forward
+    TODO: place into function
     write_servo(0, right_servo);
     write_servo(0, left_servo);
-    
-    float theta_right = read_servo_pos(right_servo_encoder);
-   	float theta_left = read_servo_pos(left_servo_encoder);
-	int i =0;
-	for(i = 0;i<10;i++){
-   		printf("theta_right= %f \n", theta_right);
-   		printf("theta_left= %f \n", theta_left );
-   		
-   		sleep(2);
-   		theta_right = read_servo_pos(right_servo_encoder);
-   		theta_left = read_servo_pos(left_servo_encoder);
-   	}
-	*/
-/*
-while(1){
-    float dist1 = read_distance_sensor(dist_1);
-    float dist2 = read_distance_sensor(dist_2);
+    /*
+   
+    /* Reads distance sensor
+    TODO: place into function.
+    while(1){
+        float dist1 = read_distance_sensor(dist_1);
+        float dist2 = read_distance_sensor(dist_2);
 
-    printf("Distance sensor #1: %f\n", dist1);
-    printf("Distance sensor #2: %f\n", dist2);
-    sleep(1);
-}
-*/
+        printf("Distance sensor #1: %f\n", dist1);
+        printf("Distance sensor #2: %f\n", dist2);
+        sleep(1);
+    }
+    */
 
 
 

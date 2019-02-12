@@ -19,7 +19,7 @@ volatile int servo_pointer: pointer to servo address
 OUTPUT: 1 succes 0 failiure
 Writes the new speed value to the servo
 */
-int write_servo (int, volatile int);
+int write_servo (int, volatile int *);
 
 /*
 read_servo_pos

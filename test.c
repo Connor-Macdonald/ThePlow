@@ -64,10 +64,8 @@ int main(void)
     int fd = -1; // used to open /dev/mem
     void *LW_virtual; // physical addresses for light-weight bridge
     // Create virtual memory access to the FPGA light-weight bridge
-    if ((fd = open_physical (fd)) == -1)
-    return (-1);
-    if (!(LW_virtual = map_physical (fd, LW_BRIDGE_BASE, LW_BRIDGE_SPAN)))
-    return (-1);
+    if ((fd = open_physical (fd)) == -1) return (-1);
+    if (!(LW_virtual = map_physical (fd, LW_BRIDGE_BASE, LW_BRIDGE_SPAN))) return (-1);
 
     // Initialize all the nessacary virtual address pointers
     volatile int * right_servo = (int *) (LW_virtual + RIGHT_SERVO); 
@@ -80,13 +78,13 @@ int main(void)
     //int dist1 = read_sensor(dist_1); // read at the beginning of the run
     //int dist2 = read_sensor(dist_2); // read at the beginning of the run
     
-
-	
-	while(1){
+    printf("deeeeeeeeeeeeeez nuts");
+	int i =0;
+	for (i = 0; i<1000;i++){
 		    // Both servos max speed forward
-			write_servo(4, *right_servo);
-			write_servo(-4, *left_servo);
-			printf("Reading greater than 3 cm");
+		write_servo(0, right_servo);
+		write_servo(0, left_servo);
+		printf("Reading greater than 3 cm\n");
 	}
 
 
@@ -121,9 +119,6 @@ int main(void)
         return 0;
     }
 	*/
-
-    return 0;
-    
     
     // Unmap FPGA bridge
     unmap_physical (LW_virtual, LW_BRIDGE_SPAN);
@@ -152,7 +147,3 @@ int main(void)
 	Basically making a spiral out from a middle center line.
 	Always turning the opposite direction of the direction of the blade.
 */ 
-
-
-
-

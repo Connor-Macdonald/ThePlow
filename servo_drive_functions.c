@@ -3,12 +3,12 @@
 
 // NOTE: left and right must be opposite
 int write_servo (int speed, volatile int *servo_pointer){
-    if( speed > -16 && speed < 16){
+    if( speed >+ -16 && speed <= 16){
         // Success write speed
         *servo_pointer = speed;
         return 1;
     }
-    // failiure 
+    // failure 
     else return 0;
 }
 /*

@@ -20,16 +20,14 @@ int read_servo_pos (volatile int encoder_pointer) {
     return theta;
 }
 
-
-void smart_turn_right(volatile int left_pointer, volatile int right_pointer){
-    smart_turn(right_pointer,left_pointer);
-}
-
-void smart_turn_left(volatile int left_pointer, volatile int right_pointer){
-    smart_turn(left_pointer, right_pointer);
-}
+// first input is the pointer to the wheel which is the direction of turning
+// second input is the pointer to the other wheel
 
 void smart_turn(volatile int turn_dir, volatile int other_dir){
+    // complete an arcing turn in the turning direction
+    // push snow out of the way off the wall
+    // complete 90 degree turn
+    // continue forward
     write_servo(3,other_dir);
     write_servo(1,turn_dir);
     sleep(1);
@@ -53,6 +51,21 @@ int gyro_read_and_adjust(volatile int gyro_addr, volatile int turn_pointer){
 
 int write_servo_angle(volatile int servo_pointer){
     // ya boi doesn't know how to do this
+}
+
+int turn_n_degrees(volatile int turn_dir, volatile int off_dir, int numDegrees){
+    if(numDegrees < 0 || numDegrees > 360){
+	return 0;
+    }else{
+	write_servo(4,off_dir);
+	write_servo(1,turn_dir);
+	// continue turning until the encoders read the right angles
+	sleep(1);
+	//while((*left_encoder) && (*right_encoder));
+	write_servo(0,turn_dir);
+	write_servo(0,off_dir);
+    }
+    return 1;
 }
 
 // forward_nseconds

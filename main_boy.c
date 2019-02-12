@@ -77,7 +77,6 @@ int main(void)
     // Both servos max speed forward
     write_servo(16, right_servo);
     write_servo(16, left_servo);
-	
 	// Start algorithm here #1
 	
 	/*

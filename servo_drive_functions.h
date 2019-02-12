@@ -5,8 +5,8 @@
 #define SPEED_LOW -16
 
 #define ENCODER_PERIOD 1099
-#define DUTY_CYCLE_MIN 29
-#define DUTY_CYCLE_MAX 971
+#define DUTY_CYCLE_MIN 2.9
+#define DUTY_CYCLE_MAX 97.1
 #define CIRCLE_UNITS 360
 
 
@@ -28,7 +28,7 @@ volatile int encoder_pointer: pointer to servo encoder address
 OUTPUT: angle of servo at time requested
 Reads the duty cycle of the encoder and calculates its angle 
 */
-int read_servo_pos (volatile int );
+float read_servo_pos (volatile int *);
 
 /*
  * smart_turn_right

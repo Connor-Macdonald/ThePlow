@@ -10,6 +10,6 @@ volatile int sensor_pointer: pointer to sensor output
 OUTPUT: distance recorded in cm
 Reads the pluse time of the sensor and calculates the distance recorded
 */
-float read_distance_sensor(volatile int);
+float read_distance_sensor(volatile int *);
 
 #endif

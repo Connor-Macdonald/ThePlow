@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <unistd.h>
 #include "address_map_arm.h"
 #include "physical_address_access.h"
 #include "physical_address_access.c"
@@ -68,8 +69,8 @@ int main(void)
     if (!(LW_virtual = map_physical (fd, LW_BRIDGE_BASE, LW_BRIDGE_SPAN))) return (-1);
 
     // Initialize all the nessacary virtual address pointers
-    volatile int * right_servo = (int *) (LW_virtual + RIGHT_SERVO); 
-    volatile int * left_servo = (int *) (LW_virtual + LEFT_SERVO); 
+    volatile int * right_servo = (int *) (LW_virtual + LEFT_SERVO); 
+    volatile int * left_servo = (int *) (LW_virtual + RIGHT_SERVO); 
     volatile int * right_servo_encoder = (int *) (LW_virtual + RIGHT_SERVO_ENCODER); 
     volatile int * left_servo_encoder = (int *) (LW_virtual + LEFT_SERVO_ENCODER); 
     volatile int * dist_1 = (int *) (LW_virtual + DIST_SENSOR_1); 
@@ -78,6 +79,8 @@ int main(void)
     //int dist1 = read_sensor(dist_1); // read at the beginning of the run
     //int dist2 = read_sensor(dist_2); // read at the beginning of the run
     
+    //this code makes it go straight
+    /*
     printf("deeeeeeeeeeeeeez nuts");
 	int i =0;
 	for (i = 0; i<1000;i++){
@@ -86,7 +89,24 @@ int main(void)
 		write_servo(0, left_servo);
 		printf("Reading greater than 3 cm\n");
 	}
+	*/
 
+
+    write_servo(0, right_servo);
+    write_servo(0, left_servo);
+    
+    float theta_right = read_servo_pos(right_servo_encoder);
+   	float theta_left = read_servo_pos(left_servo_encoder);
+	int i =0;
+	for(i = 0;i<10;i++){
+   		printf("theta_right= %f \n", theta_right);
+   		printf("theta_left= %f \n", theta_left );
+   		
+   		sleep(2);
+   		theta_right = read_servo_pos(right_servo_encoder);
+   		theta_left = read_servo_pos(left_servo_encoder);
+   	}
+    
 
     /*The arguments required for pthread_create():
         pthread_t *thread: the actual thread object that contains pthread id

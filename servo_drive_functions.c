@@ -48,6 +48,7 @@ float read_servo_pos (volatile int *encoder_pointer) {
     else if(theta > (unitsFC - 1)) theta = unitsFC - 1;
     return theta;
 }
+<<<<<<< HEAD
 
 void turn_right(volatile int *left_servo_encoder, volatile int *right_servo_encoder, volatile int *left_servo, volatile int *right_servo){
     
@@ -77,8 +78,30 @@ void turn_right(volatile int *left_servo_encoder, volatile int *right_servo_enco
 		encod1 = read_servo_pos(left_servo_encoder);
 		encod2 = read_servo_pos(right_servo_encoder);
 	}
+=======
+// NEEDS: left enconcer, right encoder, left servo, right servo, targetchange
+// function assumes the wheels are already moving in desired direction. Can include integer to define which wheel's encoder we care about
+void turn(int *left_servo_encoder, int *right_servo_encoder, int *left_servo, int *right_servo, float targetChange){
+    //float encodeL = read_servo_pos(left_servo_encoder);
+	float encodeR = read_servo_pos(right_servo_encoder);
+    int numPass = ((int)targetChange)/360;
+
+	int targetAngle = ((int)(encodeR+targetChange))%360;
+	do{
+        while((encodeR >= (targetAngle + 15)) || (encodeR <= targetAngle - 15)){
+            printf("Encoder 2 (right): %f\n",encodeR);
+            //                                      smmmMMMNNN updates every 1/800th of a second
+            nanosleep((const struct timespec[]){{0, 0001250000L}}, NULL);
+            
+            //encodeL = read_servo_pos(left_servo_encoder);
+            encodeR = read_servo_pos(right_servo_encoder);
+        }
+        numPass--;
+    }while(numPass > 0);
+>>>>>>> 8e6bd51e6effa3c9b1e812f07a76d21935a7f94a
 	printf("Stopping wheels\n");
     write_servo(0,left_servo,1);
+    write_servo(0,right_servo,1);
 }
 
 

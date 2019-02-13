@@ -1,6 +1,5 @@
 #include <stdio.h>
-#include <stdlib.h> 
-#include <limits.h> 
+#include <stdlib
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
@@ -13,6 +12,7 @@
 #include "servo_drive_functions.h"
 #include "sensor_functions.h"
 #include "sensor_functions.c"
+
 
 // TODO: Add to address map
 #define LEFT_SERVO 0x00000010
@@ -100,11 +100,6 @@ int main(void)
     volatile int * left_servo_encoder = (int *) (LW_virtual + LEFT_SERVO_ENCODER); 
     volatile int * dist_1 = (int *) (LW_virtual + DIST_SENSOR_1); 
     volatile int * dist_2 = (int *) (LW_virtual + DIST_SENSOR_2);
-<<<<<<< HEAD
-=======
-
-    //TODO: Call queue for dist functions 
->>>>>>> c5b2d88b4761c917de757ec9ceb3f47b001e5c84
 	
 	
 	

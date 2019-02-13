@@ -9,6 +9,9 @@ int write_servo (int speed, volatile int *servo_pointer){
     if (speed >= SPEED_HIGH){
         speed = SPEED_HIGH;
     }
+	 if (speed <= SPEED_LOW){
+        speed = SPEED_LOW;
+    }
     if( speed >= SPEED_LOW && speed <= SPEED_HIGH){
         // Success write speed
         *servo_pointer = speed;
@@ -21,10 +24,9 @@ int write_servo (int speed, volatile int *servo_pointer){
 
 float read_servo_pos (volatile int *encoder_pointer) {
     int unitsFC = 360;
-    float high_micro = (*encoder_pointer) / 50;
+    float high_micro = (*encoder_pointer) / 100;
     float duty_cycle = 100 * (high_micro / ENCODER_PERIOD);
     float theta = ((duty_cycle - DUTY_CYCLE_MIN) * CIRCLE_UNITS) / (DUTY_CYCLE_MAX - DUTY_CYCLE_MIN + 1);
-    printf("angle: %f\n",theta); 
     if(theta < 0){
         theta = 0;
     } 
@@ -54,8 +56,8 @@ void drive_straight (int inpspeed){
     float theta_l = read_servo_pos(left_servo_encoder);
     delay(20); // delay equivalent to the write freq of control sig of servo @ 50 Hz
 
-    // need to deal with edge cases where transition from 360 - 0
 
+    // need to deal with edge cases where transition from 360 - 0
     CIRCLE_UNITS
 
     float theta_r_diff = read_servo_pos(right_servo_encoder) - theta_r;
@@ -80,8 +82,6 @@ void drive_straight (int inpspeed){
     write_servo(r_speed, right_servo);
 }
 */
-
-
 
 
 /*

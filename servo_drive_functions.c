@@ -101,7 +101,7 @@ void drive_straight (int inpspeed){
         int r_speed = inpspeed * (1 - speed_multiplier*0.5);
     }
 
-    write_servo(-inpspeed, left_servo);
+    write_servo(inpspeed, left_servo);
     write_servo(r_speed, right_servo);
 }
 

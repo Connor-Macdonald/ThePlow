@@ -131,15 +131,16 @@ int main(void)
     }
 
    // turn(left_servo_encoder,right_servo_encoder,left_servo, right_servo, 320, 1);
-    //sleep(3);
+    sleep(3);
     
     // Go Forward Distance
     while(1){
         drive_straight(35, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
         float rev_encoder = query_weighted_distances(2);
         float side_encoder = query_weighted_distances(1);
-        printf("BACKDISTANCE: %f, SIDEDISTANCE: %f", rev_encoder, side_encoder);
+        printf("BACKDISTANCE: %f, SIDEDISTANCE: %f\n", rev_encoder, side_encoder);
         if(*push_button){
+            sleep(1);
             break;
         }
     }
@@ -147,6 +148,7 @@ int main(void)
     while(1){
         drive_straight(-35, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
         if(*push_button){
+            sleep(1);
             break;
         }
     }

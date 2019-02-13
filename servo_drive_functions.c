@@ -47,6 +47,7 @@ float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
             sensor2_old = current_sensor;
     }
 }
+
 /*
 void drive_straight (int inpspeed){
     float theta_r = read_servo_pos(right_servo_encoder);

@@ -22,6 +22,37 @@
 #define DIST_SENSOR_1 0x00000040
 #define DIST_SENSOR_2 0x00000048
 
+
+void testSpeeds(int *left_servo, int *right_servo){
+    write_servo(35, left_servo, 1);
+    write_servo(35, right_servo, 0);
+    while(1){
+        if(*push_button){
+            break;
+        }
+    }
+    write_servo(35, left_servo, 1);
+    write_servo(40, right_servo, 0);
+    while(1){
+        if(*push_button){
+            break;
+        }
+    }
+    write_servo(35, left_servo, 1);
+    write_servo(45, right_servo, 0);
+    while(1){
+        if(*push_button){
+            break;
+        }
+    }
+    write_servo(35, left_servo, 1);
+    write_servo(50, right_servo, 0);
+    while(1){
+        if(*push_button){
+            break;
+        }
+    }
+}
 int x;
 
 //struct globalvariable 
@@ -107,7 +138,7 @@ int main(void)
             break;
         }
     }
-
+    testSpeeds(left_servo, right_servo);
     turn_right(left_servo_encoder, right_servo_encoder,left_servo, right_servo);
 //STARTING TO COMMENT OUT HERE
     /* Code to make it move forward

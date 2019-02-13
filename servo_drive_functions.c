@@ -54,21 +54,26 @@ void turn(volatile int *left_servo_encoder, volatile int *right_servo_encoder, v
     write_servo((dir ? 30 : -30),right_servo,0); // if the dir is 1, then we go fw, else bw
     //float encodeL = read_servo_pos(left_servo_encoder);
     float encodeR = read_servo_pos(right_servo_encoder);
+    float prevEncode = encodeR;
     int targetAngle = ((int)targetChange + (int)encodeR)%360;
     int numPass = targetChange/360;
-    printf("Current Encode: %f:     Targetting: %dd",encodeR,targetAngle);
+    printf("Current Encode: %f:     Targetting: %d\n",encodeR,targetAngle);
     do{
         while((encodeR >= (targetAngle + 5)) || (encodeR <= targetAngle - 5)){
-            printf("Encoder 2 (right): %f\n",encodeR);
-            //                                      smmmMMMNNN updates every 1/800th of a second
-            nanosleep((const struct timespec[]){{0, 0050000000L}}, NULL);
-            
-            //encodeL = read_servo_pos(left_servo_encoder);
             encodeR = read_servo_pos(right_servo_encoder);
+            while(abs(encodeR-prevEncode) >= 4){ // ensure readings are accurate
+                encodeR = read_servo_pos(right_servo_encoder);
+                //                                      smmmMMMNNN updates every 1/800th of a second
+                nanosleep((const struct timespec[]){{0, 0010000000L}}, NULL);
+            }
+            printf("Encoder 2 (right): %f\n",encodeR);
+            nanosleep((const struct timespec[]){{0, 0010000000L}}, NULL);
+            prevEncode = encodeR;
+            
         }
         numPass--;
     }while(numPass >= 0);
-	printf("Stopping wheels\n");
+	printf("Stopping wheels with reading %f\n",encodeR);
     write_servo(0,left_servo,1);
     write_servo(0,right_servo,1);
 }

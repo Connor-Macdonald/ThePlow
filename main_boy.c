@@ -132,22 +132,28 @@ int main(void)
 
     turn(left_servo_encoder,right_servo_encoder,left_servo, right_servo, 320, 1);
 
-    //sleep(3);
+    sleep(3);
     
-    /*
-     while(1){
-         drive_straight(35, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
-         if(query_weighted_distances(2) > 50)
+    // Go Forward Distance
+    while(1){
+        drive_straight(35, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
+        if(query_weighted_distances(2) > 50)
             break;
-    }*/
+    }
+    // Drive Backwards
+    while(1){
+        drive_straight(-35, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
+        if(query_weighted_distances(2) < 5)
+            break;
+    }
     write_servo(0, left_servo, 1);
     write_servo(0, right_servo, 0);
-    /*printf("Killing Thread\n");
+    printf("Killing Thread\n");
     killWhile();
     if(pthread_join(thread1, NULL)) {
         fprintf(stderr, "Error joining thread\n");
         return 2;
-    }*/
+    }
 
     //testSpeeds(left_servo, right_servo, push_button);
 //STARTING TO COMMENT OUT HERE

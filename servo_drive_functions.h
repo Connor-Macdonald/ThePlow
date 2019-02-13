@@ -45,6 +45,13 @@ Reads the duty cycle of the encoder and calculates its angle
 */
 float read_servo_pos (volatile int *);
 
+
+/*
+drive straight while using the side ultrasonic distance sensor to monitor drift in direction
+ */
+void drive_straight_ultrasonic (int, int *, int *, int *, int *, float );
+
+
 /*
  * smart_turn_right
  * PARAMETER:

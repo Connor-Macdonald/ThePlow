@@ -152,9 +152,10 @@ int drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_s
 
 void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder, float stop_distance){
     float initial_lateral_dist = query_weighted_distances(1); //initial distance from wall
+    float backward_dist;
     nanosleep((const struct timespec[]){{0, 100000000L}}, NULL); //delay of 100 milliseconds
 
-    while(backward_dist < stopdistance){ //continue the loop until the plow is at the end of the driveway
+    while(backward_dist < stop_distance){ //continue the loop until the plow is at the end of the driveway
         float backward_dist = query_weighted_distances(2); //senses when to break out of loop
         int distance_sum = 0; //distance travelled since last query of distance from edge of driveway
         int i = 0;
@@ -170,7 +171,7 @@ void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo,
         float tan_ratio = lateral_dist_change / distance_travelled;
         float angle_deg = (atan(tan_ratio) * 180) / PI;
         printf("the angle being drive is: %f", angle_deg);
-        //correction of direction
+        //correction of direction, assumes turn function changes BOT DIRECTION by ANGLE input
         turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, -angle_deg);
     }
 }

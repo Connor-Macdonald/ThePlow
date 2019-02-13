@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h> 
+#include <limits.h> 
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
@@ -10,7 +12,6 @@
 #include "servo_drive_functions.h"
 #include "sensor_functions.h"
 #include "sensor_functions.c"
-
 
 // TODO: Add to address map
 #define RIGHT_SERVO 0x00000010

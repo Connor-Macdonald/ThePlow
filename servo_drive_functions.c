@@ -50,19 +50,24 @@ float read_servo_pos (volatile int *encoder_pointer) {
     return theta;
 }
 // Dir = 1 -> forward
-void turn(int *left_servo_encoder, int *right_servo_encoder, int *left_servo, int *right_servo, float targetChange, int dir){
+void turn(volatile int *left_servo_encoder, volatile int *right_servo_encoder, volatile int *left_servo, volatile int *right_servo, float targetChange, int dir){
     write_servo((dir ? 30 : -30),right_servo,0); // if the dir is 1, then we go fw, else bw
     //float encodeL = read_servo_pos(left_servo_encoder);
-        while((encodeR >= (targetAngle + 15)) || (encodeR <= targetAngle - 15)){
+    float encodeR = read_servo_pos(right_servo_encoder);
+    int targetAngle = ((int)targetChange + (int)encodeR)%360;
+    int numPass = targetChange/360;
+    printf("Current Encode: %f:     Targetting: %dd",encodeR,targetAngle);
+    do{
+        while((encodeR >= (targetAngle + 5)) || (encodeR <= targetAngle - 5)){
             printf("Encoder 2 (right): %f\n",encodeR);
             //                                      smmmMMMNNN updates every 1/800th of a second
-            nanosleep((const struct timespec[]){{0, 0001250000L}}, NULL);
+            nanosleep((const struct timespec[]){{0, 0050000000L}}, NULL);
             
             //encodeL = read_servo_pos(left_servo_encoder);
             encodeR = read_servo_pos(right_servo_encoder);
         }
         numPass--;
-    }while(numPass > 0);
+    }while(numPass >= 0);
 	printf("Stopping wheels\n");
     write_servo(0,left_servo,1);
     write_servo(0,right_servo,1);
@@ -145,7 +150,7 @@ int drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_s
 }
 
 
-void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder, float stop_distance){
+/*void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder, float stop_distance){
     float initial_lateral_dist = query_weighted_distances(1); //initial distance from wall
     float backward_dist;
     nanosleep((const struct timespec[]){{0, 100000000L}}, NULL); //delay of 100 milliseconds
@@ -169,7 +174,7 @@ void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo,
         //correction of direction, assumes turn function changes BOT DIRECTION by ANGLE input
         turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, -angle_deg);
     }
-}
+}*/
 
 
 

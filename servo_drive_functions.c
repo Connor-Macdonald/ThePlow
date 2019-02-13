@@ -33,6 +33,38 @@ float read_servo_pos (volatile int *encoder_pointer) {
     return theta;
 }
 
+void turn_right(int *left_servo_encoder, int *right_servo_encoder, int *left_servo, int *right_servo){
+    
+	float encod1 = read_servo_pos(left_servo_encoder);
+	float encod2 = read_servo_pos(right_servo_encoder);
+	
+	
+	write_servo(-30,right_servo);
+	write_servo(30,left_servo);
+
+	sleep(5);
+	
+	write_servo(0,right_servo);
+	
+	encod1 = read_servo_pos(left_servo_encoder);
+	encod2 = read_servo_pos(right_servo_encoder);
+	
+	float targetChange = 180.0;
+	int targetAngle = ((int)(encod1+targetChange))%360;
+	
+	while((encod2 >= (targetAngle + 20)) || (encod2 <= targetAngle - 20)){
+		printf("Encoder 1: %f\n",encod1);
+		printf("Encoder 2: %f\n",encod2);
+		
+		nanosleep((const struct timespec[]){{0, 250000000L}}, NULL);
+		
+		encod1 = read_servo_pos(left_servo_encoder);
+		encod2 = read_servo_pos(right_servo_encoder);
+	}
+	printf("Stopping wheels\n");
+    write_servo(0,left_servo);
+}
+
 /*
 float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
     float current_sensor = read_servo_pos(encoder_pointer);
@@ -49,11 +81,7 @@ float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
             sensor2_old = current_sensor;
     }
 }
-<<<<<<< HEAD
 */
-=======
-
->>>>>>> bb05cf2298320563cf074376204f77170a47a9a3
 /*
 void drive_straight (int inpspeed){
     float theta_r = read_servo_pos(right_servo_encoder);

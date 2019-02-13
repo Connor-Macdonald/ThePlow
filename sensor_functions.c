@@ -15,7 +15,7 @@ void weighted_distance_sensor(volatile int *left_sensor, volatile int *right_sen
     queue1 = createQueue(queueNum);
     queue2 = createQueue(queueNum);
 
-    while(true){
+    while(1){
         if(isFull(queue1)){
             dequeue(queue1);
         }
@@ -45,5 +45,4 @@ float query_weighted_distances(int sensor){
         }
         return sum/queueNum;
     }
-    else return NULL; // error change this i guess
 }

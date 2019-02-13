@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <stdlib
+#include <stdlib.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
@@ -102,11 +102,13 @@ int main(void)
     volatile int * dist_2 = (int *) (LW_virtual + DIST_SENSOR_2);
 	volatile int * push_button = (int *) (LW_virtual + 0x00000050); 
 	
-	while(true){
+	while(1){
         if(*push_button){
             break;
         }
     }
+
+    turn_right(left_servo_encoder, right_servo_encoder,left_servo, right_servo);
 //STARTING TO COMMENT OUT HERE
     /* Code to make it move forward
     TODO: place into function
@@ -124,36 +126,8 @@ int main(void)
         sleep(1);
     }
     ENDING COMMENT HERE */
-	float encod1 = read_servo_pos(left_servo_encoder);
-	float encod2 = read_servo_pos(right_servo_encoder);
-	int speed = 30;
-	
-	write_servo(-30,right_servo);
-	write_servo(30,left_servo);
-	
-	printf("Before break.\n");
-	
-	sleep(5);
-	
-	printf("After break.\n");
-	write_servo(0,right_servo);
-	
-	encod1 = read_servo_pos(left_servo_encoder);
-	encod2 = read_servo_pos(right_servo_encoder);
-	
-	float targetChange = 180.0;
-	int targetAngle = ((int)(encod1+targetChange))%360;
-	
-	while((encod2 >= (targetAngle + 20)) || (encod2 <= targetAngle - 20)){
-		printf("Encoder 1: %f\n",encod1);
-		printf("Encoder 2: %f\n",encod2);
-		
-		nanosleep((const struct timespec[]){{0, 250000000L}}, NULL);
-		
-		encod1 = read_servo_pos(left_servo_encoder);
-		encod2 = read_servo_pos(right_servo_encoder);
-	}
-	printf("I'm done, this bitch empty yeet\n");
+   
+
     /*// THREAD STUFF
 
 	//The arguments required for pthread_create():

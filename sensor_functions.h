@@ -25,6 +25,8 @@ returns the weighted averadges
 PARAMETER
 int = 1 : return sensor1
 int = 2 : return sensor2
+
+NOTE: assumes that queue is full
 */
 float query_weighted_distances(int);
 

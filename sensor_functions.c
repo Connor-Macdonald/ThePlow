@@ -11,18 +11,38 @@ float read_distance_sensor(volatile int *sensor_pointer){
     return dist;
 }
 
-float weighted_distance_sensor(volatile int *, volatile int *){
+void weighted_distance_sensor(volatile int *left_sensor, volatile int *right_sensor){
     queue1 = createQueue(queueNum);
     queue2 = createQueue(queueNum);
 
     while(true){
         if(isFull(queue1)){
-            dequeue(queue1)
+            dequeue(queue1);
         }
         if(isFull(queue2)){
-            dequeue(queue2)
+            dequeue(queue2);
         }
-        enqueue(queue1, read_distance_sensor())
+        enqueue(queue1, read_distance_sensor(left_sensor));
+        enqueue(queue2, read_distance_sensor(right_sensor));
+        sleep(1); // change to smaller values
+    }
+}
 
+float query_weighted_distances(int sensor){
+    if(sensor == 1){
+        float sum;
+        int i = 0;
+        for(i = 0; i > queueNum; i ++){
+            sum = sum + queue1->array[i];
+        }
+        return sum/queueNum;
+    }
+    else if(sensor == 2){
+        float sum;
+        int i = 0;
+        for(i = 0; i > queueNum; i ++){
+            sum = sum + queue2->array[i];
+        }
+        return sum/queueNum;
     }
 }

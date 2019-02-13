@@ -1,3 +1,7 @@
 {
+<<<<<<< HEAD
+    "C_Cpp.intelliSenseEngineFallback": "Disabled"
+=======
     "C_Cpp.intelliSenseEngineFallback": "Enabled"
+>>>>>>> 0252667c998eaa9630a9a9833768f1899436842c
 }

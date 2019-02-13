@@ -1,14 +1,30 @@
 #include "physical_address_access.h"
 #include "servo_drive_functions.h"
+#include "time.h"
 
-// NOTE: left and right must be opposite
-int write_servo (int speed, volatile int *servo_pointer){
-    //if *servo_pointer ==
+float sensor1_old;
+float sensor2_old;
+
+
+int write_servo (int speed, volatile int *servo_pointer, int ifleft){ //reverses the direction of the right servo speed
+    if (ifleft == 1){
+        write_servo_direct(speed, *servo_pointer);
+        return 1;
+    }
+    if (ifleft == 0){
+        write_servo_direct(-speed, *servo_pointer);
+        return 1;
+    }
+    return 0;
+}
+
+
+int write_servo_direct (int speed, volatile int *servo_pointer){ //writes to the servo
 
     if (speed >= SPEED_HIGH){
         speed = SPEED_HIGH;
     }
-	 if (speed <= SPEED_LOW){
+    if (speed <= SPEED_LOW){
         speed = SPEED_LOW;
     }
     if( speed >= SPEED_LOW && speed <= SPEED_HIGH){
@@ -16,7 +32,7 @@ int write_servo (int speed, volatile int *servo_pointer){
         *servo_pointer = speed;
         return 1;
     }
-    // failure 
+        // failure
     else return 0;
 }
 
@@ -33,6 +49,7 @@ float read_servo_pos (volatile int *encoder_pointer) {
     return theta;
 }
 
+<<<<<<< HEAD
 void turn_right(int *left_servo_encoder, int *right_servo_encoder, int *left_servo, int *right_servo){
     
 	float encod1 = read_servo_pos(left_servo_encoder);
@@ -66,55 +83,77 @@ void turn_right(int *left_servo_encoder, int *right_servo_encoder, int *left_ser
 }
 
 /*
+=======
+
+>>>>>>> e46e73736d22677cb024eb8f7837e0c3ddce31ff
 float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
     float current_sensor = read_servo_pos(encoder_pointer);
     if(sensor == 1){
         if(abs(current_sensor - sensor1_old) > OUTLIER_THRESHOLD)
-            return sensor1_old
+            return sensor1_old;
         else 
             sensor1_old = current_sensor;
     }
     else if(sensor == 2){
         if(abs(current_sensor - sensor2_old) > OUTLIER_THRESHOLD)
-            return sensor2_old
+            return sensor2_old;
         else 
             sensor2_old = current_sensor;
     }
 }
+<<<<<<< HEAD
 */
 /*
+=======
+
+
+>>>>>>> e46e73736d22677cb024eb8f7837e0c3ddce31ff
 void drive_straight (int inpspeed){
-    float theta_r = read_servo_pos(right_servo_encoder);
-    float theta_l = read_servo_pos(left_servo_encoder);
-    delay(20); // delay equivalent to the write freq of control sig of servo @ 50 Hz
+    float jerkiness = 0.5; //value between 0-1 to monitor how big driving adjustments are
+    int r_speed; //right servo speed, to be adjusted later in function
 
+    float theta_r = read_servo_pos(RIGHT_SERVO_ENCODER);
+    float theta_l = read_servo_pos(LEFT_SERVO_ENCODER);
 
-  
-    // need to deal with edge cases where transition from 360 - 0
-    CIRCLE_UNITS
+    nanosleep((const struct timespec[]){{0, 50000000L}}, NULL); //delay of 50 milliseconds
 
-    float theta_r_diff = read_servo_pos(right_servo_encoder) - theta_r;
-    float theta_l_diff = read_servo_pos(left_servo_encoder) - theta_l;
-    printf("angle diff right: %f", theta_r_diff);
-    printf("angle diff left: %f", theta_l_diff)
+    float theta_r2 = read_servo_pos(RIGHT_SERVO_ENCODER);
+    float theta_l2 = read_servo_pos(LEFT_SERVO_ENCODER);
 
-    if theta_r_diff > 300 && theta_r
+    float theta_r_diff = abs(theta_r2 - theta_r);
+    float theta_l_diff = abs(theta_l2 - theta_l);
 
+    //cases where there is a transition caused by end of rotation
+    if(theta_r_diff > 300 && theta_r > 330){ //if the difference made a transition from 360-0
+        theta_r_diff = CIRCLE_UNITS - theta_r + theta_r2;
+    }
+    if(theta_l_diff > 300 && theta_l > 330){ //if the difference made a transition from 360-0
+        theta_l_diff = CIRCLE_UNITS - theta_l + theta_l2;
+    }
+    if(theta_r_diff > 300 && theta_r < 30){ //if the difference made a transition from 0-360
+        theta_r_diff = CIRCLE_UNITS - theta_r2 + theta_r;
+    }
+    if(theta_l_diff > 300 && theta_l < 30){ //if the difference made a transition from 0-360
+        theta_l_diff = CIRCLE_UNITS - theta_l2 + theta_l;
+    }
 
     // set speed difference to be proportionate to difference between wheels
     if (theta_r_diff > theta_l_diff){
-        float speed_multiplier = 100 * (theta_r_diff - theta_l_diff) / theta_l_diff;
-        int r_speed = inpspeed * (1 + speed_multiplier*0.3);
+        float speed_multiplier = (theta_r_diff - theta_l_diff) / theta_l_diff;
+        r_speed = inpspeed * (1 + speed_multiplier*jerkiness);
     }
     else{
         float speed_multiplier = (theta_l_diff - theta_r_diff) / theta_r_diff;
-        int r_speed = inpspeed * (1 - speed_multiplier*0.3);
+        if (speed_multiplier >= 1){ //so speed cannot be set to or below zero
+            speed_multiplier = 0.9;
+        }
+        r_speed = inpspeed * (1 - speed_multiplier*jerkiness);
     }
 
-    write_servo(-inpspeed, left_servo);
-    write_servo(r_speed, right_servo);
+    write_servo(inpspeed, LEFT_SERVO, 1);
+    write_servo(r_speed, RIGHT_SERVO, 0);
 }
-*/
+
 
 
 /*

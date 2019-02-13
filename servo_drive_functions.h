@@ -9,17 +9,35 @@
 #define DUTY_CYCLE_MAX 97.1
 #define CIRCLE_UNITS 360
 
+#define RIGHT_SERVO_ENCODER 0x00000020
+#define LEFT_SERVO_ENCODER 0x00000030
+#define LEFT_SERVO 0x00000010
+#define RIGHT_SERVO 0x00000018
 
+//chane this
+#define OUTLIER_THRESHOLD 100
 
-/* 
+/*
 write_servo
 PARAMETER:
 int speed: new speed value
 volatile int servo_pointer: pointer to servo address
-OUTPUT: 1 succes 0 failiure
+if left: write 1 for left servo, 0 for right
+OUTPUT: 1 success 0 failure
 Writes the new speed value to the servo
 */
-int write_servo (int, volatile int *);
+int write_servo (int, volatile int *, int);
+
+/* 
+write_servo_direct
+PARAMETER:
+int speed: new speed value
+volatile int servo_pointer: pointer to servo address
+if left:
+OUTPUT: 1 success 0 failure
+Writes the new speed value to the servo
+*/
+int write_servo_direct (int, volatile int *); //writes to the servo
 
 /*
 read_servo_pos

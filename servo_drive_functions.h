@@ -8,6 +8,8 @@
 #define DUTY_CYCLE_MIN 2.9
 #define DUTY_CYCLE_MAX 97.1
 #define CIRCLE_UNITS 360
+#define WHEEL_CIRCUMFERENCE 20 //in cm
+#define PI 3.1415
 
 //chane this
 #define OUTLIER_THRESHOLD 100

@@ -1,6 +1,7 @@
 #include "physical_address_access.h"
 #include "servo_drive_functions.h"
 #include "time.h"
+#include "math.h"
 
 float sensor1_old;
 float sensor2_old;
@@ -89,7 +90,7 @@ float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
     }
 }
 
-void drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder){
+int drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder){
     float jerkiness = 0.4; //value between 0-1 to monitor how big driving adjustments are
     int r_speed; //right servo speed, to be adjusted later in function
 
@@ -104,6 +105,11 @@ void drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_
     float theta_r_diff = abs(theta_r2 - theta_r);
     float theta_l_diff = abs(theta_l2 - theta_l);
 
+    //too much difference in wheel angle indicates incorrect sensor readout, recall function
+    if (theta_l_diff > 50 || theta_r_diff > 50){
+        return 0;
+    }
+
     //cases where there is a transition caused by end of rotation
     if(theta_r_diff > 100 && theta_r > 300){ //if the difference made a transition from 360-0
         theta_r_diff = CIRCLE_UNITS - theta_r + theta_r2;
@@ -117,9 +123,7 @@ void drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_
     if(theta_l_diff > 100 && theta_l < 60){ //if the difference made a transition from 0-360
         theta_l_diff = CIRCLE_UNITS - theta_l2 + theta_l;
     }
-    if (theta_l_diff > 50 || theta_r_diff >50){
-        return;
-    }
+
     // set speed difference to be proportionate to difference between wheels
     if (theta_r_diff > theta_l_diff){
         float speed_multiplier = (theta_r_diff - theta_l_diff) / theta_l_diff;
@@ -138,9 +142,37 @@ void drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_
         printf("right wheel slowed down\n");
     }
     
-    printf("R is: %f\tL is: %f\n", theta_r_diff, theta_l_diff);
+//    printf("R is: %f\tL is: %f\n", theta_r_diff, theta_l_diff);
     write_servo(inpspeed, left_servo, 1);
     write_servo(r_speed, right_servo, 0);
+
+    return (theta_l_diff + theta_r_diff) / 2;
+}
+
+
+void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder, float stop_distance){
+    float initial_lateral_dist = query_weighted_distances(1); //initial distance from wall
+    nanosleep((const struct timespec[]){{0, 100000000L}}, NULL); //delay of 100 milliseconds
+
+    while(backward_dist < stopdistance){ //continue the loop until the plow is at the end of the driveway
+        float backward_dist = query_weighted_distances(2); //senses when to break out of loop
+        int distance_sum = 0; //distance travelled since last query of distance from edge of driveway
+        int i = 0;
+        //drive for one second using encoder to correct direction
+        for(i = 0; i < 20; i++){ //loop 20 times, 50ms per iteration, equal to 1 second
+            distance_sum += drive_straight(35, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
+        }
+        //float distance_travelled = WHEEL_CIRCUMFERENCE * distance_sum; //distance travelled in cm
+        float lateral_dist_change = query_weighted_distances(1) - initial_lateral_dist; //amount of lateral change over one second drive
+        float distance_travelled = query_weighted_distances(2) - backward_dist;
+        //lateral distance change negative - bot has drifted right
+        //lateral distance change positive - bot has drifted left
+        float tan_ratio = lateral_dist_change / distance_travelled;
+        float angle_deg = (atan(tan_ratio) * 180) / PI;
+        printf("the angle being drive is: %f", angle_deg);
+        //correction of direction
+        turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, -angle_deg);
+    }
 }
 
 

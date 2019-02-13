@@ -6,11 +6,11 @@ float sensor2_old
 
 int write_servo (int speed, volatile int *servo_pointer){ //reverses the direction of the right servo speed
     if (*servo_pointer == left_servo){
-        write_servo_direct(speed, *servo_pointer)
+        write_servo_direct(speed, *servo_pointer);
         return 1;
     }
     if (*servo_pointer == right_servo){
-        write_servo_direct(-speed, *servo_pointer)
+        write_servo_direct(-speed, *servo_pointer);
         return 1;
     }
     return 0;

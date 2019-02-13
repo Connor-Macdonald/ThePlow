@@ -11,7 +11,9 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bdd1d223-10e1-4792-ab33-b3afd58979fb" name="Default Changelist" comment="" />
+    <list default="true" id="bdd1d223-10e1-4792-ab33-b3afd58979fb" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/servo_drive_functions.c" beforeDir="false" afterPath="$PROJECT_DIR$/servo_drive_functions.c" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -49,7 +51,7 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="c" value="1790" />
+          <entry key="c" value="1878" />
           <entry key="cpp" value="114" />
           <entry key="h" value="2" />
           <entry key="txt" value="77" />
@@ -58,7 +60,7 @@
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CMakeLists.txt" value="23" />
-          <entry key="ObjectiveC" value="1906" />
+          <entry key="ObjectiveC" value="1994" />
           <entry key="PLAIN_TEXT" value="54" />
         </counts>
       </usages-collector>
@@ -69,8 +71,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/servo_drive_functions.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="107" lean-forward="true" selection-start-line="107" selection-end-line="107" />
+            <state relative-caret-position="210">
+              <caret line="66" lean-forward="true" selection-start-line="66" selection-end-line="66" />
               <folding>
                 <element signature="e#0#36#0" expanded="true" />
               </folding>
@@ -308,9 +310,17 @@
       <item itemvalue="Application.ThePlow" />
     </list>
   </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20171674" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -448,8 +458,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/servo_drive_functions.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="107" lean-forward="true" selection-start-line="107" selection-end-line="107" />
+        <state relative-caret-position="210">
+          <caret line="66" lean-forward="true" selection-start-line="66" selection-end-line="66" />
           <folding>
             <element signature="e#0#36#0" expanded="true" />
           </folding>

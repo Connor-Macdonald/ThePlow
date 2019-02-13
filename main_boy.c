@@ -23,44 +23,58 @@
 #define DIST_SENSOR_2 0x00000048
 
 
-void testSpeeds(int *left_servo, int *right_servo){
-    write_servo(35, left_servo, 1);
-    write_servo(35, right_servo, 0);
-    while(1){
-        if(*push_button){
-            break;
-        }
-    }
-    write_servo(35, left_servo, 1);
-    write_servo(40, right_servo, 0);
-    while(1){
-        if(*push_button){
-            break;
-        }
-    }
-    write_servo(35, left_servo, 1);
-    write_servo(45, right_servo, 0);
-    while(1){
-        if(*push_button){
-            break;
-        }
-    }
-    write_servo(35, left_servo, 1);
-    write_servo(50, right_servo, 0);
-    while(1){
-        if(*push_button){
-            break;
-        }
-    }
-}
-int x;
+void testSpeeds(volatile int *left_servo, volatile int *right_servo, volatile int *push_button){
 
-//struct globalvariable 
-//{
-  //  /* data */
-    //int *xDtata = 0;
-    //int *yData = 0;
-//}; 
+    //RESULTS 
+    // So far L:35 R:43 provides the straightest line
+    // right should be 8 bigger 
+    sleep(2);
+    write_servo(70, left_servo, 1);
+    write_servo(78, right_servo, 0);
+    while(1){
+        if(*push_button){
+            break;
+        }
+    }
+    write_servo(0, left_servo, 1);
+    write_servo(0, right_servo, 0);
+    sleep(2);
+    write_servo(70, left_servo, 1);
+    write_servo(79, right_servo, 0);
+    while(1){
+        if(*push_button){
+            break;
+        }
+    }
+    write_servo(0, left_servo, 1);
+    write_servo(0, right_servo, 0);
+    sleep(2);
+    write_servo(70, left_servo, 1);
+    write_servo(80, right_servo, 0);
+    while(1){
+        if(*push_button){
+            break;
+        }
+    }
+    write_servo(0, left_servo, 1);
+    write_servo(0, right_servo, 0);
+    sleep(2);
+    write_servo(70, left_servo, 1);
+    write_servo(81, right_servo, 0);
+    while(1){
+        if(*push_button){
+            break;
+        }
+    }
+    write_servo(0, left_servo, 1);
+    write_servo(0, right_servo, 0);
+}
+struct globalvariable 
+{
+   /* data */
+    int *xDtata = 0;
+    int *yData = 0;
+}; 
 /*
 compile command is gcc thread.c -thread
 
@@ -73,7 +87,7 @@ http://www.cse.cuhk.edu.hk/~ericlo/teaching/os/lab/9-PThread/Pass.html
 Random thread function for testing
 void* is used when working with different pointer types
 */
-void *routing(void *num){
+void *sensor_thread(void *num){
     //int *p = (int *)num;
     int i =0;
     //printf("im here in thread 1\n");
@@ -89,29 +103,6 @@ void *routing(void *num){
     */
    sleep(1);
     }
-}
-
-void *positionCalc(void *num2){
-    int i = 0;
-    
-    //int *o = (int *)num2;
-    for(i=0;i<50;i++){
-    printf("Thread 2 works! %d\n", x);
-    /*
-    while(1){
-
-        //write to memory
-        *xdata = 300; 
-        *ydata = 300;
-    }
-    */
-   sleep(1);
-    }
-}
-
-void *sensorPos(void *num3){
-    int *x = (int *)num3;
-    printf("Thread 3 works! %d\n", *x);
 }
 
 
@@ -138,17 +129,14 @@ int main(void)
             break;
         }
     }
-<<<<<<< HEAD
 
-    //turn_right(left_servo_encoder, right_servo_encoder,left_servo, right_servo);
-    while(1){
-        drive_straight(28, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
-        
+    
+    // turn_right(left_servo_encoder, right_servo_encoder,left_servo, right_servo);
+     while(1){
+         drive_straight(35, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
     }
-=======
-    testSpeeds(left_servo, right_servo);
-    turn_right(left_servo_encoder, right_servo_encoder,left_servo, right_servo);
->>>>>>> d5d2b2411943ae0b197a0dae930396438659b03d
+    //testSpeeds(left_servo, right_servo, push_button);
+    // turn_right(left_servo_encoder, right_servo_encoder,left_servo, right_servo);
 //STARTING TO COMMENT OUT HERE
     /* Code to make it move forward
     TODO: place into function

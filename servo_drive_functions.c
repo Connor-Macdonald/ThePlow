@@ -136,7 +136,7 @@ int drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_s
             speed_multiplier = 1;
         }
         r_speed = inpspeed * (1 + speed_multiplier*jerkiness);
-        printf("right wheel SPED UP");
+//        printf("right wheel SPED UP");
     }
     else{
         float speed_multiplier = (theta_l_diff - theta_r_diff) / theta_r_diff;
@@ -144,7 +144,7 @@ int drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_s
             speed_multiplier = 0.9;
         }
         r_speed = inpspeed * (1 - speed_multiplier*jerkiness);
-        printf("right wheel slowed down\n");
+//        printf("right wheel slowed down\n");
     }
     
 //    printf("R is: %f\tL is: %f\n", theta_r_diff, theta_l_diff);

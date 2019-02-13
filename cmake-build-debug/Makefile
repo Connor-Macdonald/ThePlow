@@ -110,46 +110,6 @@ depend:
 	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
-#=============================================================================
-# Target rules for targets named ThePlow
-
-# Build rule for target.
-ThePlow: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ThePlow
-.PHONY : ThePlow
-
-# fast build rule for target.
-ThePlow/fast:
-	$(MAKE) -f CMakeFiles/ThePlow.dir/build.make CMakeFiles/ThePlow.dir/build
-.PHONY : ThePlow/fast
-
-AccelerometerReading.o: AccelerometerReading.c.o
-
-.PHONY : AccelerometerReading.o
-
-# target to build an object file
-AccelerometerReading.c.o:
-	$(MAKE) -f CMakeFiles/ThePlow.dir/build.make CMakeFiles/ThePlow.dir/AccelerometerReading.c.o
-.PHONY : AccelerometerReading.c.o
-
-AccelerometerReading.i: AccelerometerReading.c.i
-
-.PHONY : AccelerometerReading.i
-
-# target to preprocess a source file
-AccelerometerReading.c.i:
-	$(MAKE) -f CMakeFiles/ThePlow.dir/build.make CMakeFiles/ThePlow.dir/AccelerometerReading.c.i
-.PHONY : AccelerometerReading.c.i
-
-AccelerometerReading.s: AccelerometerReading.c.s
-
-.PHONY : AccelerometerReading.s
-
-# target to generate assembly for a file
-AccelerometerReading.c.s:
-	$(MAKE) -f CMakeFiles/ThePlow.dir/build.make CMakeFiles/ThePlow.dir/AccelerometerReading.c.s
-.PHONY : AccelerometerReading.c.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -158,10 +118,6 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... ThePlow"
-	@echo "... AccelerometerReading.o"
-	@echo "... AccelerometerReading.i"
-	@echo "... AccelerometerReading.s"
 .PHONY : help
 
 

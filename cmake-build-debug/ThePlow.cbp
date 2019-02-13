@@ -37,54 +37,7 @@
 					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/mtigwell/CLionProjects/ThePlow/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="ThePlow">
-				<Option output="/Users/mtigwell/CLionProjects/ThePlow/cmake-build-debug/ThePlow" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/mtigwell/CLionProjects/ThePlow/cmake-build-debug"/>
-				<Option object_output="./"/>
-				<Option type="1"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.0/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
-					<Add directory="/usr/include"/>
-					<Add directory="/System/Library/Frameworks"/>
-					<Add directory="/Library/Frameworks"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/mtigwell/CLionProjects/ThePlow/cmake-build-debug/Makefile&quot;  VERBOSE=1 ThePlow"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/mtigwell/CLionProjects/ThePlow/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/mtigwell/CLionProjects/ThePlow/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/mtigwell/CLionProjects/ThePlow/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="ThePlow/fast">
-				<Option output="/Users/mtigwell/CLionProjects/ThePlow/cmake-build-debug/ThePlow" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/mtigwell/CLionProjects/ThePlow/cmake-build-debug"/>
-				<Option object_output="./"/>
-				<Option type="1"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.0/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
-					<Add directory="/usr/include"/>
-					<Add directory="/System/Library/Frameworks"/>
-					<Add directory="/Library/Frameworks"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/mtigwell/CLionProjects/ThePlow/cmake-build-debug/Makefile&quot;  VERBOSE=1 ThePlow/fast"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/mtigwell/CLionProjects/ThePlow/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/mtigwell/CLionProjects/ThePlow/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/mtigwell/CLionProjects/ThePlow/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
 		</Build>
-		<Unit filename="/Users/mtigwell/CLionProjects/ThePlow/AccelerometerReading.c">
-			<Option target="ThePlow"/>
-		</Unit>
 		<Unit filename="/Users/mtigwell/CLionProjects/ThePlow/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>

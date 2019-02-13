@@ -7,4 +7,20 @@
 #IncludeRegexTransform: 
 
 /Users/mtigwell/CLionProjects/ThePlow/AccelerometerReading.c
+stdio.h
+-
+stdlib.h
+-
+unistd.h
+-
+fcntl.h
+-
+sys/ioctl.h
+-
+linux/i2c-dev.h
+-
+linux/i2c.h
+-
+sys/time.h
+-
 

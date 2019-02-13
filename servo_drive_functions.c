@@ -1,7 +1,6 @@
 #include "physical_address_access.h"
 #include "servo_drive_functions.h"
-float sensor1_old
-float sensor2_old
+
 // NOTE: left and right must be opposite
 int write_servo (int speed, volatile int *servo_pointer){
     //if *servo_pointer ==
@@ -34,6 +33,7 @@ float read_servo_pos (volatile int *encoder_pointer) {
     return theta;
 }
 
+/*
 float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
     float current_sensor = read_servo_pos(encoder_pointer);
     if(sensor == 1){
@@ -49,7 +49,11 @@ float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
             sensor2_old = current_sensor;
     }
 }
+<<<<<<< HEAD
+*/
+=======
 
+>>>>>>> bb05cf2298320563cf074376204f77170a47a9a3
 /*
 void drive_straight (int inpspeed){
     float theta_r = read_servo_pos(right_servo_encoder);
@@ -57,6 +61,7 @@ void drive_straight (int inpspeed){
     delay(20); // delay equivalent to the write freq of control sig of servo @ 50 Hz
 
 
+  
     // need to deal with edge cases where transition from 360 - 0
     CIRCLE_UNITS
 

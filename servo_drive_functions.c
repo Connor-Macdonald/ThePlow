@@ -2,14 +2,27 @@
 #include "servo_drive_functions.h"
 float sensor1_old
 float sensor2_old
-// NOTE: left and right must be opposite
-int write_servo (int speed, volatile int *servo_pointer){
-    //if *servo_pointer ==
+
+
+int write_servo (int speed, volatile int *servo_pointer){ //reverses the direction of the right servo speed
+    if (*servo_pointer == left_servo){
+        write_servo_direct(speed, *servo_pointer)
+        return 1;
+    }
+    if (*servo_pointer == right_servo){
+        write_servo_direct(-speed, *servo_pointer)
+        return 1;
+    }
+    return 0;
+}
+
+
+int write_servo_direct (int speed, volatile int *servo_pointer){ //writes to the servo
 
     if (speed >= SPEED_HIGH){
         speed = SPEED_HIGH;
     }
-	 if (speed <= SPEED_LOW){
+    if (speed <= SPEED_LOW){
         speed = SPEED_LOW;
     }
     if( speed >= SPEED_LOW && speed <= SPEED_HIGH){
@@ -17,7 +30,7 @@ int write_servo (int speed, volatile int *servo_pointer){
         *servo_pointer = speed;
         return 1;
     }
-    // failure 
+        // failure
     else return 0;
 }
 
@@ -33,6 +46,7 @@ float read_servo_pos (volatile int *encoder_pointer) {
     else if(theta > (unitsFC - 1)) theta = unitsFC - 1;
     return theta;
 }
+
 
 float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
     float current_sensor = read_servo_pos(encoder_pointer);
@@ -50,38 +64,47 @@ float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
     }
 }
 
-/*
+
 void drive_straight (int inpspeed){
     float theta_r = read_servo_pos(right_servo_encoder);
     float theta_l = read_servo_pos(left_servo_encoder);
-    delay(20); // delay equivalent to the write freq of control sig of servo @ 50 Hz
 
+    nanosleep((const struct timespec[]){{0, 50000000L}}, NULL); //delay of 50 milliseconds
 
-    // need to deal with edge cases where transition from 360 - 0
-    CIRCLE_UNITS
+    float theta_r2 = read_servo_pos(right_servo_encoder);
+    float theta_l2 = read_servo_pos(left_servo_encoder);
 
-    float theta_r_diff = read_servo_pos(right_servo_encoder) - theta_r;
-    float theta_l_diff = read_servo_pos(left_servo_encoder) - theta_l;
-    printf("angle diff right: %f", theta_r_diff);
-    printf("angle diff left: %f", theta_l_diff)
+    float theta_r_diff = abs(theta_r2 - theta_r);
+    float theta_l_diff = abs(theta_l2 - theta_l);
 
-    if theta_r_diff > 300 && theta_r
-
+    //cases where there is a transition caused by end of rotation
+    if(theta_r_diff > 300 && theta_r > 330){ //if the difference made a transition from 360-0
+        theta_r_diff = CIRCLE_UNITS - theta_r + theta_r2
+    }
+    if(theta_l_diff > 300 && theta_l > 330){ //if the difference made a transition from 360-0
+        theta_l_diff = CIRCLE_UNITS - theta_l + theta_l2
+    }
+    if(theta_r_diff > 300 && theta_r < 30){ //if the difference made a transition from 0-360
+        theta_r_diff = CIRCLE_UNITS - theta_r2 + theta_r
+    }
+    if(theta_l_diff > 300 && theta_l < 30){ //if the difference made a transition from 0-360
+        theta_l_diff = CIRCLE_UNITS - theta_l2 + theta_l
+    }
 
     // set speed difference to be proportionate to difference between wheels
     if (theta_r_diff > theta_l_diff){
         float speed_multiplier = 100 * (theta_r_diff - theta_l_diff) / theta_l_diff;
-        int r_speed = inpspeed * (1 + speed_multiplier*0.3);
+        int r_speed = inpspeed * (1 + speed_multiplier*0.5);
     }
     else{
         float speed_multiplier = (theta_l_diff - theta_r_diff) / theta_r_diff;
-        int r_speed = inpspeed * (1 - speed_multiplier*0.3);
+        int r_speed = inpspeed * (1 - speed_multiplier*0.5);
     }
 
     write_servo(-inpspeed, left_servo);
     write_servo(r_speed, right_servo);
 }
-*/
+
 
 
 /*

@@ -100,9 +100,13 @@ int main(void)
     volatile int * left_servo_encoder = (int *) (LW_virtual + LEFT_SERVO_ENCODER); 
     volatile int * dist_1 = (int *) (LW_virtual + DIST_SENSOR_1); 
     volatile int * dist_2 = (int *) (LW_virtual + DIST_SENSOR_2);
+	volatile int * push_button = (int *) (LW_virtual + 0x00000050); 
 	
-	
-	
+	while(true){
+        if(*push_button){
+            break;
+        }
+    }
 //STARTING TO COMMENT OUT HERE
     /* Code to make it move forward
     TODO: place into function

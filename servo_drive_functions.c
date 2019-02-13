@@ -49,6 +49,9 @@ float read_servo_pos (volatile int *encoder_pointer) {
     return theta;
 }
 
+
+
+
 void turn_right(int *left_servo_encoder, int *right_servo_encoder, int *left_servo, int *right_servo){
     
 	float encod1 = read_servo_pos(left_servo_encoder);

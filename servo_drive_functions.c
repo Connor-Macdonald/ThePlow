@@ -49,7 +49,6 @@ float read_servo_pos (volatile int *encoder_pointer) {
     return theta;
 }
 
-<<<<<<< HEAD
 void turn_right(int *left_servo_encoder, int *right_servo_encoder, int *left_servo, int *right_servo){
     
 	float encod1 = read_servo_pos(left_servo_encoder);
@@ -82,10 +81,7 @@ void turn_right(int *left_servo_encoder, int *right_servo_encoder, int *left_ser
     write_servo(0,left_servo);
 }
 
-/*
-=======
 
->>>>>>> e46e73736d22677cb024eb8f7837e0c3ddce31ff
 float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
     float current_sensor = read_servo_pos(encoder_pointer);
     if(sensor == 1){
@@ -101,13 +97,7 @@ float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
             sensor2_old = current_sensor;
     }
 }
-<<<<<<< HEAD
-*/
-/*
-=======
 
-
->>>>>>> e46e73736d22677cb024eb8f7837e0c3ddce31ff
 void drive_straight (int inpspeed){
     float jerkiness = 0.5; //value between 0-1 to monitor how big driving adjustments are
     int r_speed; //right servo speed, to be adjusted later in function

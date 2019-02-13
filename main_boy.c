@@ -100,7 +100,7 @@ int main(void)
     volatile int * dist_1 = (int *) (LW_virtual + DIST_SENSOR_1); 
     volatile int * dist_2 = (int *) (LW_virtual + DIST_SENSOR_2);
 
-    
+    //TODO: Call queue for dist functions 
 	
 
     /* Code to make it move forward

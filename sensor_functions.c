@@ -45,4 +45,5 @@ float query_weighted_distances(int sensor){
         }
         return sum/queueNum;
     }
+    else return NULL; // error change this i guess
 }

@@ -9,6 +9,8 @@
 #define DUTY_CYCLE_MAX 97.1
 #define CIRCLE_UNITS 360
 
+#define OUTLIER_THRESHOLD 20
+
 
 
 /* 
@@ -29,6 +31,12 @@ OUTPUT: angle of servo at time requested
 Reads the duty cycle of the encoder and calculates its angle 
 */
 float read_servo_pos (volatile int *);
+
+/*
+read sensor and remove outlines
+must be used with constant quereing 
+*/
+float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor);
 
 /*
  * smart_turn_right

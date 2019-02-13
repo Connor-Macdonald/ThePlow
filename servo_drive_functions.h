@@ -8,6 +8,8 @@
 #define DUTY_CYCLE_MIN 2.9
 #define DUTY_CYCLE_MAX 97.1
 #define CIRCLE_UNITS 360
+#define WHEEL_CIRCUMFERENCE 20 //in cm
+#define PI 3.1415
 
 //chane this
 #define OUTLIER_THRESHOLD 100
@@ -42,6 +44,13 @@ OUTPUT: angle of servo at time requested
 Reads the duty cycle of the encoder and calculates its angle 
 */
 float read_servo_pos (volatile int *);
+
+
+/*
+drive straight while using the side ultrasonic distance sensor to monitor drift in direction
+ */
+void drive_straight_ultrasonic (int, int *, int *, int *, int *, float );
+
 
 /*
  * smart_turn_right

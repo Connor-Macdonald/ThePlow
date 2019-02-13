@@ -8,11 +8,11 @@ float sensor2_old;
 
 int write_servo (int speed, volatile int *servo_pointer, int ifleft){ //reverses the direction of the right servo speed
     if (ifleft == 1){
-        write_servo_direct(speed, *servo_pointer);
+        write_servo_direct(speed, servo_pointer);
         return 1;
     }
     if (ifleft == 0){
-        write_servo_direct(-speed, *servo_pointer);
+        write_servo_direct(-speed,servo_pointer);
         return 1;
     }
     return 0;
@@ -55,12 +55,12 @@ void turn_right(int *left_servo_encoder, int *right_servo_encoder, int *left_ser
 	float encod2 = read_servo_pos(right_servo_encoder);
 	
 	
-	write_servo(-30,right_servo);
-	write_servo(30,left_servo);
+	write_servo(30,right_servo,0);
+	write_servo(30,left_servo,1);
 
 	sleep(5);
 	
-	write_servo(0,right_servo);
+	write_servo(0,right_servo,0);
 	
 	encod1 = read_servo_pos(left_servo_encoder);
 	encod2 = read_servo_pos(right_servo_encoder);
@@ -78,7 +78,7 @@ void turn_right(int *left_servo_encoder, int *right_servo_encoder, int *left_ser
 		encod2 = read_servo_pos(right_servo_encoder);
 	}
 	printf("Stopping wheels\n");
-    write_servo(0,left_servo);
+    write_servo(0,left_servo,1);
 }
 
 
@@ -98,39 +98,45 @@ float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
     }
 }
 
-void drive_straight (int inpspeed){
-    float jerkiness = 0.5; //value between 0-1 to monitor how big driving adjustments are
+void drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder){
+    float jerkiness = 0.4; //value between 0-1 to monitor how big driving adjustments are
     int r_speed; //right servo speed, to be adjusted later in function
 
-    float theta_r = read_servo_pos(RIGHT_SERVO_ENCODER);
-    float theta_l = read_servo_pos(LEFT_SERVO_ENCODER);
+    float theta_r = read_servo_pos(right_servo_encoder);
+    float theta_l = read_servo_pos(left_servo_encoder);
 
     nanosleep((const struct timespec[]){{0, 50000000L}}, NULL); //delay of 50 milliseconds
 
-    float theta_r2 = read_servo_pos(RIGHT_SERVO_ENCODER);
-    float theta_l2 = read_servo_pos(LEFT_SERVO_ENCODER);
+    float theta_r2 = read_servo_pos(right_servo_encoder);
+    float theta_l2 = read_servo_pos(left_servo_encoder);
 
     float theta_r_diff = abs(theta_r2 - theta_r);
     float theta_l_diff = abs(theta_l2 - theta_l);
 
     //cases where there is a transition caused by end of rotation
-    if(theta_r_diff > 300 && theta_r > 330){ //if the difference made a transition from 360-0
+    if(theta_r_diff > 100 && theta_r > 300){ //if the difference made a transition from 360-0
         theta_r_diff = CIRCLE_UNITS - theta_r + theta_r2;
     }
-    if(theta_l_diff > 300 && theta_l > 330){ //if the difference made a transition from 360-0
+    if(theta_l_diff > 100 && theta_l > 300){ //if the difference made a transition from 360-0
         theta_l_diff = CIRCLE_UNITS - theta_l + theta_l2;
     }
-    if(theta_r_diff > 300 && theta_r < 30){ //if the difference made a transition from 0-360
+    if(theta_r_diff > 100 && theta_r < 60){ //if the difference made a transition from 0-360
         theta_r_diff = CIRCLE_UNITS - theta_r2 + theta_r;
     }
-    if(theta_l_diff > 300 && theta_l < 30){ //if the difference made a transition from 0-360
+    if(theta_l_diff > 100 && theta_l < 60){ //if the difference made a transition from 0-360
         theta_l_diff = CIRCLE_UNITS - theta_l2 + theta_l;
     }
-
+    if (theta_l_diff > 50 || theta_r_diff >50){
+        return;
+    }
     // set speed difference to be proportionate to difference between wheels
     if (theta_r_diff > theta_l_diff){
         float speed_multiplier = (theta_r_diff - theta_l_diff) / theta_l_diff;
+        if(speed_multiplier >= 1){
+            speed_multiplier = 1;
+        }
         r_speed = inpspeed * (1 + speed_multiplier*jerkiness);
+        printf("right wheel SPED UP");
     }
     else{
         float speed_multiplier = (theta_l_diff - theta_r_diff) / theta_r_diff;
@@ -138,10 +144,12 @@ void drive_straight (int inpspeed){
             speed_multiplier = 0.9;
         }
         r_speed = inpspeed * (1 - speed_multiplier*jerkiness);
+        printf("right wheel slowed down\n");
     }
-
-    write_servo(inpspeed, LEFT_SERVO, 1);
-    write_servo(r_speed, RIGHT_SERVO, 0);
+    
+    printf("R is: %f\tL is: %f\n", theta_r_diff, theta_l_diff);
+    write_servo(inpspeed, left_servo, 1);
+    write_servo(r_speed, right_servo, 0);
 }
 
 

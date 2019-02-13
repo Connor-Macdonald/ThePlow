@@ -108,7 +108,11 @@ int main(void)
         }
     }
 
-    turn_right(left_servo_encoder, right_servo_encoder,left_servo, right_servo);
+    //turn_right(left_servo_encoder, right_servo_encoder,left_servo, right_servo);
+    while(1){
+        drive_straight(28, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
+        
+    }
 //STARTING TO COMMENT OUT HERE
     /* Code to make it move forward
     TODO: place into function

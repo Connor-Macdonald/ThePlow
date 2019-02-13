@@ -30,4 +30,11 @@ NOTE: assumes that queue is full
 */
 float query_weighted_distances(int);
 
+/* NOTE look at this
+    assumes that the side sensor is sensor 1 in the create_distance_sensor_queues
+
+    returns the angle of the cart 0 is straight
+*/
+int check_side_distance();
+
 #endif

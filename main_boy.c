@@ -3,6 +3,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <time.h>
 #include "address_map_arm.h"
 #include "physical_address_access.h"
 #include "physical_address_access.c"
@@ -13,8 +14,8 @@
 
 
 // TODO: Add to address map
-#define RIGHT_SERVO 0x00000010
-#define LEFT_SERVO 0x00000018
+#define LEFT_SERVO 0x00000010
+#define RIGHT_SERVO 0x00000018
 #define RIGHT_SERVO_ENCODER 0x00000020
 #define LEFT_SERVO_ENCODER 0x00000030
 #define DIST_SENSOR_1 0x00000040
@@ -92,23 +93,22 @@ int main(void)
     if (!(LW_virtual = map_physical (fd, LW_BRIDGE_BASE, LW_BRIDGE_SPAN))) return (-1);
 
     // Initialize all the nessacary virtual address pointers
-    volatile int * right_servo = (int *) (LW_virtual + LEFT_SERVO); 
-    volatile int * left_servo = (int *) (LW_virtual + RIGHT_SERVO); 
+	volatile int * left_servo = (unsigned int *) (LW_virtual + LEFT_SERVO);
+    volatile int * right_servo = (unsigned int *) (LW_virtual + RIGHT_SERVO);
     volatile int * right_servo_encoder = (int *) (LW_virtual + RIGHT_SERVO_ENCODER); 
     volatile int * left_servo_encoder = (int *) (LW_virtual + LEFT_SERVO_ENCODER); 
     volatile int * dist_1 = (int *) (LW_virtual + DIST_SENSOR_1); 
     volatile int * dist_2 = (int *) (LW_virtual + DIST_SENSOR_2);
-
-    
 	
-
+	
+	
+//STARTING TO COMMENT OUT HERE
     /* Code to make it move forward
     TODO: place into function
     write_servo(0, right_servo);
     write_servo(0, left_servo);
-    /*
    
-    /* Reads distance sensor
+    Reads distance sensor
     TODO: place into function.
     while(1){
         float dist1 = read_distance_sensor(dist_1);
@@ -118,57 +118,61 @@ int main(void)
         printf("Distance sensor #2: %f\n", dist2);
         sleep(1);
     }
-    */
+    ENDING COMMENT HERE */
+	float encod1 = read_servo_pos(left_servo_encoder);
+	float encod2 = read_servo_pos(right_servo_encoder);
+	int speed = 30;
+	
+	write_servo(-30,right_servo);
+	write_servo(30,left_servo);
+	
+	printf("Before break.\n");
+	
+	sleep(5);
+	
+	printf("After break.\n");
+	write_servo(0,right_servo);
+	
+	encod1 = read_servo_pos(left_servo_encoder);
+	encod2 = read_servo_pos(right_servo_encoder);
+	
+	float targetChange = 180.0;
+	int targetAngle = ((int)(encod1+targetChange))%360;
+	
+	while((encod2 >= (targetAngle + 20)) || (encod2 <= targetAngle - 20)){
+		printf("Encoder 1: %f\n",encod1);
+		printf("Encoder 2: %f\n",encod2);
+		
+		nanosleep((const struct timespec[]){{0, 250000000L}}, NULL);
+		
+		encod1 = read_servo_pos(left_servo_encoder);
+		encod2 = read_servo_pos(right_servo_encoder);
+	}
+	printf("I'm done, this bitch empty yeet\n");
+    /*// THREAD STUFF
 
-
-
-    /*The arguments required for pthread_create():
-        pthread_t *thread: the actual thread object that contains pthread id
-        pthread_attr_t *attr: attributes to apply to this thread
-        void *(*start_routine)(void *): the function this thread executes
-        void *arg: arguments to pass to thread function above
-    */
-
+	//The arguments required for pthread_create():
+    //    pthread_t *thread: the actual thread object that contains pthread id
+    //    pthread_attr_t *attr: attributes to apply to this thread
+    //    void *(*start_routine)(void *): the function this thread executes
+    //    void *arg: arguments to pass to thread function above
+    
     //NOTE: when compiling: gcc main_boy.c -o main_boy -lpthread
     printf("calling 1\n");
     //creating thread 1
 	pthread_t thread1;
     pthread_create(&thread1, NULL, routing, NULL);
-
-    /*
-    if(pthread_join(thread1, NULL)) {
-        fprintf(stderr, "Error joining thread\n");
-        return 2;
-
-    }
-    */
     printf("calling 2\n");
     //creating thread 2
 	pthread_t thread2;
     pthread_create(&thread2, NULL, positionCalc, NULL);
 
-
-    /*
-    if(pthread_join(thread2, NULL)) {
-        fprintf(stderr, "Error joining thread\n");
-        return 2;
-
-    }
-    */
-
    printf("calling 3\n");
+   //creating thread 3
    //creating thread 3
 	pthread_t thread3;
     int z =3;
     pthread_create(&thread3, NULL, sensorPos, &z);
-
-    /*
-    if(pthread_join(thread3, NULL)) {
-        fprintf(stderr, "Error joining thread\n");
-        return 2;
-
-    }
-    */
 
     if(pthread_join(thread1, NULL)) {
         fprintf(stderr, "Error joining thread\n");
@@ -184,7 +188,7 @@ int main(void)
         fprintf(stderr, "Error joining thread\n");
         return 2;
 
-    }
+    }*/
     
     // Unmap FPGA bridge
     unmap_physical (LW_virtual, LW_BRIDGE_SPAN);

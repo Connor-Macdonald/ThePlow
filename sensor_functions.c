@@ -4,6 +4,8 @@
 struct Queue* queue1;
 struct Queue* queue2;
 int queueNum = 10;
+int old_side = 0;
+
 
 float read_distance_sensor(volatile int *sensor_pointer){
         printf("Sensor pointer %d\n", *sensor_pointer);
@@ -46,3 +48,14 @@ float query_weighted_distances(int sensor){
         return sum/queueNum;
     }
 }
+
+// Get distance
+// int check_side_distance(){
+//     float new_side = query_weighted_distances(1);
+//     if(new_side < old_side){
+
+//     }
+//     else {
+        
+//     }
+// }

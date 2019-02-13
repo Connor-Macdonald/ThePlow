@@ -130,6 +130,39 @@ int main(void)
         }
     }
 
+    printf("Testing turning 90 CCW");
+    turn(left_servo_encoder,right_servo_encoder,left_servo, right_servo, 90, 1);
+    printf("Done");
+
+    sleep(3);
+
+    printf("Testing turning 90 CW");
+    turn(left_servo_encoder,right_servo_encoder,left_servo, right_servo, 90, 0);
+    printf("Done");
+
+    sleep(3);
+
+    printf("Testing turning 180 CCW");
+    turn(left_servo_encoder,right_servo_encoder,left_servo, right_servo, 180, 1);
+    printf("Done");
+
+    sleep(3);
+
+    printf("Testing turning 180 CW");
+    turn(left_servo_encoder,right_servo_encoder,left_servo, right_servo, 180, 0);
+    printf("Done");
+    
+    sleep(3);
+
+    printf("Testing turning 360 CCW");
+    turn(left_servo_encoder,right_servo_encoder,left_servo, right_servo, 360, 1);
+    printf("Done");
+
+    sleep(3);
+
+    printf("Testing turning 360 CW");
+    turn(left_servo_encoder,right_servo_encoder,left_servo, right_servo, 360, 0);
+    printf("Done");
     
     // turn_right(left_servo_encoder, right_servo_encoder,left_servo, right_servo);
      while(1){

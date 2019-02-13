@@ -48,8 +48,8 @@ float read_servo_pos (volatile int *encoder_pointer) {
     else if(theta > (unitsFC - 1)) theta = unitsFC - 1;
     return theta;
 }
-// NEEDS: left enconcer, right encoder, left servo, right servo, targetchange
-// function assumes the wheels are already moving in desired direction. Can include integer to define which wheel's encoder we care about
+
+// Dir = 1 -> forward
 void turn(int *left_servo_encoder, int *right_servo_encoder, int *left_servo, int *right_servo, float targetChange, int dir){
     write_servo((dir ? 30 : -30),right_servo,0); // if the dir is 1, then we go fw, else bw
     //float encodeL = read_servo_pos(left_servo_encoder);

@@ -48,40 +48,28 @@ float read_servo_pos (volatile int *encoder_pointer) {
     else if(theta > (unitsFC - 1)) theta = unitsFC - 1;
     return theta;
 }
+// NEEDS: left enconcer, right encoder, left servo, right servo, targetchange
+// function assumes the wheels are already moving in desired direction. Can include integer to define which wheel's encoder we care about
+void turn(int *left_servo_encoder, int *right_servo_encoder, int *left_servo, int *right_servo, float targetChange){
+    //float encodeL = read_servo_pos(left_servo_encoder);
+	float encodeR = read_servo_pos(right_servo_encoder);
+    int numPass = ((int)targetChange)/360;
 
-
-
-
-void turn_right(int *left_servo_encoder, int *right_servo_encoder, int *left_servo, int *right_servo){
-    
-	float encod1 = read_servo_pos(left_servo_encoder);
-	float encod2 = read_servo_pos(right_servo_encoder);
-	
-	
-	write_servo(30,right_servo,0);
-	write_servo(30,left_servo,1);
-
-	sleep(5);
-	
-	write_servo(0,right_servo,0);
-	
-	encod1 = read_servo_pos(left_servo_encoder);
-	encod2 = read_servo_pos(right_servo_encoder);
-	
-	float targetChange = 180.0;
-	int targetAngle = ((int)(encod1+targetChange))%360;
-	
-	while((encod2 >= (targetAngle + 20)) || (encod2 <= targetAngle - 20)){
-		printf("Encoder 1: %f\n",encod1);
-		printf("Encoder 2: %f\n",encod2);
-		
-		nanosleep((const struct timespec[]){{0, 250000000L}}, NULL);
-		
-		encod1 = read_servo_pos(left_servo_encoder);
-		encod2 = read_servo_pos(right_servo_encoder);
-	}
+	int targetAngle = ((int)(encodeR+targetChange))%360;
+	do{
+        while((encodeR >= (targetAngle + 15)) || (encodeR <= targetAngle - 15)){
+            printf("Encoder 2 (right): %f\n",encodeR);
+            //                                      smmmMMMNNN updates every 1/800th of a second
+            nanosleep((const struct timespec[]){{0, 0001250000L}}, NULL);
+            
+            //encodeL = read_servo_pos(left_servo_encoder);
+            encodeR = read_servo_pos(right_servo_encoder);
+        }
+        numPass--;
+    }while(numPass > 0);
 	printf("Stopping wheels\n");
     write_servo(0,left_servo,1);
+    write_servo(0,right_servo,1);
 }
 
 

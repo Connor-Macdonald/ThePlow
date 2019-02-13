@@ -116,28 +116,30 @@ int main(void)
     volatile int * dist_2 = (int *) (LW_virtual + DIST_SENSOR_2);
 	volatile int * push_button = (int *) (LW_virtual + 0x00000050);
 
-    /*struct Dist_sensor sensors;
+    struct Dist_sensor sensors;
 
     sensors.sideways_sensor = dist_1;
     sensors.backwards_sensor = dist_2;
 
     pthread_t thread1;
     printf("Starting thread\n");
-    pthread_create(&thread1, NULL, sensor_thread, (void*) &sensors);*/
+    pthread_create(&thread1, NULL, sensor_thread, (void*) &sensors);
     while(1){
         if(*push_button){
             break;
         }
     }
 
-    turn(left_servo_encoder,right_servo_encoder,left_servo, right_servo, 320, 1);
+   // turn(left_servo_encoder,right_servo_encoder,left_servo, right_servo, 320, 1);
 
-    sleep(3);
+    //sleep(3);
     
     // Go Forward Distance
     while(1){
         drive_straight(35, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
-        if(query_weighted_distances(2) > 50)
+        float rev_encoder = query_weighted_distances(2);
+        printf("query_weighted_distances: %f", rev_encoder);
+        if(rev_encoder > 50)
             break;
     }
     // Drive Backwards

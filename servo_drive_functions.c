@@ -1,15 +1,17 @@
 #include "physical_address_access.h"
 #include "servo_drive_functions.h"
-float sensor1_old
-float sensor2_old
+#include "time.h"
+
+float sensor1_old;
+float sensor2_old;
 
 
-int write_servo (int speed, volatile int *servo_pointer){ //reverses the direction of the right servo speed
-    if (*servo_pointer == left_servo){
+int write_servo (int speed, volatile int *servo_pointer, int ifleft){ //reverses the direction of the right servo speed
+    if (ifleft == 1){
         write_servo_direct(speed, *servo_pointer);
         return 1;
     }
-    if (*servo_pointer == right_servo){
+    if (ifleft == 0){
         write_servo_direct(-speed, *servo_pointer);
         return 1;
     }
@@ -52,13 +54,13 @@ float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
     float current_sensor = read_servo_pos(encoder_pointer);
     if(sensor == 1){
         if(abs(current_sensor - sensor1_old) > OUTLIER_THRESHOLD)
-            return sensor1_old
+            return sensor1_old;
         else 
             sensor1_old = current_sensor;
     }
     else if(sensor == 2){
         if(abs(current_sensor - sensor2_old) > OUTLIER_THRESHOLD)
-            return sensor2_old
+            return sensor2_old;
         else 
             sensor2_old = current_sensor;
     }
@@ -66,13 +68,16 @@ float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
 
 
 void drive_straight (int inpspeed){
-    float theta_r = read_servo_pos(right_servo_encoder);
-    float theta_l = read_servo_pos(left_servo_encoder);
+    float jerkiness = 0.5; //value between 0-1 to monitor how big driving adjustments are
+    int r_speed; //right servo speed, to be adjusted later in function
+
+    float theta_r = read_servo_pos(RIGHT_SERVO_ENCODER);
+    float theta_l = read_servo_pos(LEFT_SERVO_ENCODER);
 
     nanosleep((const struct timespec[]){{0, 50000000L}}, NULL); //delay of 50 milliseconds
 
-    float theta_r2 = read_servo_pos(right_servo_encoder);
-    float theta_l2 = read_servo_pos(left_servo_encoder);
+    float theta_r2 = read_servo_pos(RIGHT_SERVO_ENCODER);
+    float theta_l2 = read_servo_pos(LEFT_SERVO_ENCODER);
 
     float theta_r_diff = abs(theta_r2 - theta_r);
     float theta_l_diff = abs(theta_l2 - theta_l);
@@ -94,18 +99,18 @@ void drive_straight (int inpspeed){
     // set speed difference to be proportionate to difference between wheels
     if (theta_r_diff > theta_l_diff){
         float speed_multiplier = (theta_r_diff - theta_l_diff) / theta_l_diff;
-        int r_speed = inpspeed * (1 + speed_multiplier);
+        r_speed = inpspeed * (1 + speed_multiplier*jerkiness);
     }
     else{
         float speed_multiplier = (theta_l_diff - theta_r_diff) / theta_r_diff;
         if (speed_multiplier >= 1){ //so speed cannot be set to or below zero
             speed_multiplier = 0.9;
         }
-        int r_speed = inpspeed * (1 - speed_multiplier);
+        r_speed = inpspeed * (1 - speed_multiplier*jerkiness);
     }
 
-    write_servo(inpspeed, left_servo);
-    write_servo(r_speed, right_servo);
+    write_servo(inpspeed, LEFT_SERVO, 1);
+    write_servo(r_speed, RIGHT_SERVO, 0);
 }
 
 

@@ -110,38 +110,44 @@ int main(void)
     // Initialize all the nessacary virtual address pointers
 	volatile int * left_servo = (unsigned int *) (LW_virtual + LEFT_SERVO);
     volatile int * right_servo = (unsigned int *) (LW_virtual + RIGHT_SERVO);
-    volatile int * right_servo_encoder = (int *) (LW_virtual + RIGHT_SERVO_ENCODER);
-    volatile int * left_servo_encoder = (int *) (LW_virtual + LEFT_SERVO_ENCODER);
+    volatile int * left_servo_encoder = (int *) (LW_virtual + RIGHT_SERVO_ENCODER);
+    volatile int * right_servo_encoder = (int *) (LW_virtual + LEFT_SERVO_ENCODER);
     volatile int * dist_1 = (int *) (LW_virtual + DIST_SENSOR_1);
     volatile int * dist_2 = (int *) (LW_virtual + DIST_SENSOR_2);
 	volatile int * push_button = (int *) (LW_virtual + 0x00000050);
 
-    struct Dist_sensor sensors;
+    /*struct Dist_sensor sensors;
 
     sensors.sideways_sensor = dist_1;
     sensors.backwards_sensor = dist_2;
 
     pthread_t thread1;
     printf("Starting thread\n");
-    pthread_create(&thread1, NULL, sensor_thread, (void*) &sensors);
+    pthread_create(&thread1, NULL, sensor_thread, (void*) &sensors);*/
     while(1){
         if(*push_button){
             break;
         }
     }
-    while(1){
+
+    turn(left_servo_encoder,right_servo_encoder,left_servo, right_servo, 320, 1);
+
+    //sleep(3);
+    
+    /*
+     while(1){
          drive_straight(35, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
          if(query_weighted_distances(2) > 50)
             break;
-    }
+    }*/
     write_servo(0, left_servo, 1);
     write_servo(0, right_servo, 0);
-    printf("Killing Thread\n");
+    /*printf("Killing Thread\n");
     killWhile();
     if(pthread_join(thread1, NULL)) {
         fprintf(stderr, "Error joining thread\n");
         return 2;
-    }
+    }*/
 
     //testSpeeds(left_servo, right_servo, push_button);
 //STARTING TO COMMENT OUT HERE

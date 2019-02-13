@@ -49,26 +49,31 @@ float read_servo_pos (volatile int *encoder_pointer) {
     else if(theta > (unitsFC - 1)) theta = unitsFC - 1;
     return theta;
 }
-// NEEDS: left enconcer, right encoder, left servo, right servo, targetchange
-// function assumes the wheels are already moving in desired direction. Can include integer to define which wheel's encoder we care about
-void turn(int *left_servo_encoder, int *right_servo_encoder, int *left_servo, int *right_servo, float targetChange){
+// Dir = 1 -> forward
+void turn(volatile int *left_servo_encoder, volatile int *right_servo_encoder, volatile int *left_servo, volatile int *right_servo, float targetChange, int dir){
+    write_servo((dir ? 30 : -30),right_servo,0); // if the dir is 1, then we go fw, else bw
     //float encodeL = read_servo_pos(left_servo_encoder);
-	float encodeR = read_servo_pos(right_servo_encoder);
-    int numPass = ((int)targetChange)/360;
-
-	int targetAngle = ((int)(encodeR+targetChange))%360;
-	do{
-        while((encodeR >= (targetAngle + 15)) || (encodeR <= targetAngle - 15)){
-            printf("Encoder 2 (right): %f\n",encodeR);
-            //                                      smmmMMMNNN updates every 1/800th of a second
-            nanosleep((const struct timespec[]){{0, 0001250000L}}, NULL);
-            
-            //encodeL = read_servo_pos(left_servo_encoder);
+    float encodeR = read_servo_pos(right_servo_encoder);
+    float prevEncode = encodeR;
+    int targetAngle = ((int)targetChange + (int)encodeR)%360;
+    int numPass = targetChange/360;
+    printf("Current Encode: %f:     Targetting: %d\n",encodeR,targetAngle);
+    do{
+        while((encodeR >= (targetAngle + 5)) || (encodeR <= targetAngle - 5)){
             encodeR = read_servo_pos(right_servo_encoder);
+            while(abs(encodeR-prevEncode) >= 4){ // ensure readings are accurate
+                encodeR = read_servo_pos(right_servo_encoder);
+                //                                      smmmMMMNNN updates every 1/800th of a second
+                nanosleep((const struct timespec[]){{0, 0010000000L}}, NULL);
+            }
+            printf("Encoder 2 (right): %f\n",encodeR);
+            nanosleep((const struct timespec[]){{0, 0010000000L}}, NULL);
+            prevEncode = encodeR;
+            
         }
         numPass--;
-    }while(numPass > 0);
-	printf("Stopping wheels\n");
+    }while(numPass >= 0);
+	printf("Stopping wheels with reading %f\n",encodeR);
     write_servo(0,left_servo,1);
     write_servo(0,right_servo,1);
 }
@@ -150,7 +155,7 @@ int drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_s
 }
 
 
-void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder, float stop_distance){
+/*void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder, float stop_distance){
     float initial_lateral_dist = query_weighted_distances(1); //initial distance from wall
     float backward_dist;
     nanosleep((const struct timespec[]){{0, 100000000L}}, NULL); //delay of 100 milliseconds
@@ -174,7 +179,7 @@ void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo,
         //correction of direction, assumes turn function changes BOT DIRECTION by ANGLE input
         turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, -angle_deg);
     }
-}
+}*/
 
 
 

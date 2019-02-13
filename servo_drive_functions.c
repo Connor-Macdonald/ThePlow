@@ -79,26 +79,29 @@ void drive_straight (int inpspeed){
 
     //cases where there is a transition caused by end of rotation
     if(theta_r_diff > 300 && theta_r > 330){ //if the difference made a transition from 360-0
-        theta_r_diff = CIRCLE_UNITS - theta_r + theta_r2
+        theta_r_diff = CIRCLE_UNITS - theta_r + theta_r2;
     }
     if(theta_l_diff > 300 && theta_l > 330){ //if the difference made a transition from 360-0
-        theta_l_diff = CIRCLE_UNITS - theta_l + theta_l2
+        theta_l_diff = CIRCLE_UNITS - theta_l + theta_l2;
     }
     if(theta_r_diff > 300 && theta_r < 30){ //if the difference made a transition from 0-360
-        theta_r_diff = CIRCLE_UNITS - theta_r2 + theta_r
+        theta_r_diff = CIRCLE_UNITS - theta_r2 + theta_r;
     }
     if(theta_l_diff > 300 && theta_l < 30){ //if the difference made a transition from 0-360
-        theta_l_diff = CIRCLE_UNITS - theta_l2 + theta_l
+        theta_l_diff = CIRCLE_UNITS - theta_l2 + theta_l;
     }
 
     // set speed difference to be proportionate to difference between wheels
     if (theta_r_diff > theta_l_diff){
-        float speed_multiplier = 100 * (theta_r_diff - theta_l_diff) / theta_l_diff;
-        int r_speed = inpspeed * (1 + speed_multiplier*0.5);
+        float speed_multiplier = (theta_r_diff - theta_l_diff) / theta_l_diff;
+        int r_speed = inpspeed * (1 + speed_multiplier);
     }
     else{
         float speed_multiplier = (theta_l_diff - theta_r_diff) / theta_r_diff;
-        int r_speed = inpspeed * (1 - speed_multiplier*0.5);
+        if (speed_multiplier >= 1){ //so speed cannot be set to or below zero
+            speed_multiplier = 0.9;
+        }
+        int r_speed = inpspeed * (1 - speed_multiplier);
     }
 
     write_servo(inpspeed, left_servo);

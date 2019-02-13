@@ -23,8 +23,8 @@ void create_distance_sensor_queues(volatile int *, volatile int *);
 /*
 returns the weighted averadges 
 PARAMETER
-int = 1 : return sensor1
-int = 2 : return sensor2
+int = 1 : return sensor1 NOTE: sideways sensor
+int = 2 : return sensor2 NOTE: backwards sensor
 
 NOTE: assumes that queue is full
 */

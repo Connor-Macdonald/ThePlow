@@ -49,7 +49,7 @@ float read_servo_pos (volatile int *encoder_pointer) {
     return theta;
 }
 
-void turn_right(int *left_servo_encoder, int *right_servo_encoder, int *left_servo, int *right_servo){
+void turn_right(volatile int *left_servo_encoder, volatile int *right_servo_encoder, volatile int *left_servo, volatile int *right_servo){
     
 	float encod1 = read_servo_pos(left_servo_encoder);
 	float encod2 = read_servo_pos(right_servo_encoder);
@@ -98,7 +98,7 @@ float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
     }
 }
 
-void drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder){
+void drive_straight (int inpspeed, volatile int *left_servo, volatile int *right_servo, volatile int *left_servo_encoder, volatile int *right_servo_encoder){
     float jerkiness = 0.4; //value between 0-1 to monitor how big driving adjustments are
     int r_speed; //right servo speed, to be adjusted later in function
 
@@ -126,7 +126,7 @@ void drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_
     if(theta_l_diff > 100 && theta_l < 60){ //if the difference made a transition from 0-360
         theta_l_diff = CIRCLE_UNITS - theta_l2 + theta_l;
     }
-    if (theta_l_diff > 50 || theta_r_diff >50){
+    if (theta_l_diff > 50 || theta_r_diff > 50 ){
         return;
     }
     // set speed difference to be proportionate to difference between wheels
@@ -136,7 +136,7 @@ void drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_
             speed_multiplier = 1;
         }
         r_speed = inpspeed * (1 + speed_multiplier*jerkiness);
-        printf("right wheel SPED UP");
+        printf("right wheel SPED UP\n");
     }
     else{
         float speed_multiplier = (theta_l_diff - theta_r_diff) / theta_r_diff;
@@ -149,7 +149,7 @@ void drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_
     
     printf("R is: %f\tL is: %f\n", theta_r_diff, theta_l_diff);
     write_servo(inpspeed, left_servo, 1);
-    write_servo(r_speed, right_servo, 0);
+    write_servo(r_speed + 8, right_servo, 0); // 
 }
 
 

@@ -1,5 +1,5 @@
 #include "sensor_functions.h"
-#include "queue.c"
+//#include "queue.c"
 
 int stopWhile = 1;
 
@@ -54,6 +54,7 @@ float query_weighted_distances(int sensor){
         }
         return sum/queueNum;
     }
+    return 0;
 }
 
 // Get distance

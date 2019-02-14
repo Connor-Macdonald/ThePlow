@@ -1,7 +1,5 @@
 #include "physical_address_access.h"
 #include "servo_drive_functions.h"
-#include "time.h"
-#include "math.h"
 
 float sensor1_old;
 float sensor2_old;
@@ -37,6 +35,13 @@ int write_servo_direct (int speed, volatile int *servo_pointer){ //writes to the
     else return 0;
 }
 
+float babs(float first, float second){
+    if (first > second){
+        return (first - second);
+    }else{
+        return (second - first);
+    }
+}
 
 float read_servo_pos (volatile int *encoder_pointer) {
     int unitsFC = 360;
@@ -50,28 +55,34 @@ float read_servo_pos (volatile int *encoder_pointer) {
     return theta;
 }
 // Dir = 1 -> forward
-void turn(volatile int *left_servo_encoder, volatile int *right_servo_encoder, volatile int *left_servo, volatile int *right_servo, float targetChange, int dir){
-    write_servo((dir ? 30 : -30),right_servo,0); // if the dir is 1, then we go fw, else bw
+void turn(volatile int *left_servo_encoder, 
+          volatile int *right_servo_encoder, 
+          volatile int *left_servo, 
+          volatile int *right_servo, 
+          float targetChange, 
+          int dir){
+    
+    write_servo(((dir == 1) ? 38 : -30),right_servo,0); // if the dir is 1, then we go fw, else bw
     //float encodeL = read_servo_pos(left_servo_encoder);
     float encodeR;
-    float prevEncode = read_servo_pos(right_servo_encoder);;
+    float prevEncode = read_servo_pos(right_servo_encoder);
     float diff = 0.0;
     while(diff < targetChange){
         encodeR = read_servo_pos(right_servo_encoder);
-        while((abs(encodeR-prevEncode) >= 4) && (abs(encodeR-prevEncode) <= 345)){ // ensure readings are accurate
+        while((babs(encodeR,prevEncode) >= 4) && (babs(encodeR,prevEncode) <= 345)){ // ensure readings are accurate
             encodeR = read_servo_pos(right_servo_encoder);
-            printf("Bad Value!!!!");
             //                                      smmmMMMNNN updates every 1/800th of a second
-            nanosleep((const struct timespec[]){{0, 0005000000L}}, NULL);
+            nanosleep((const struct timespec[]){{0, 0001000000L}}, NULL);
         }
         //printf("Previous: %f \t New: %f \t Diff: %d \n", prevEncode, encodeR, abs(encodeR-prevEncode));
-        nanosleep((const struct timespec[]){{0, 0005000000L}}, NULL);
+        nanosleep((const struct timespec[]){{0, 0001000000L}}, NULL);
+        printf("%.3f    %.3f",encodeR,prevEncode);
         if (encodeR < 60 && prevEncode > 300){
-            diff += encodeR + (360 - prevEncode);
+            diff += encodeR + (360.0 - prevEncode);
         }else if (encodeR > 300 && prevEncode < 60){
-            diff += prevEncode + (360 - encodeR);
+            diff += prevEncode + (360.0 - encodeR);
         }else{
-            diff += (abs(prevEncode - encodeR));
+            diff += (babs(prevEncode,encodeR));
         }
         prevEncode = encodeR;
         printf("Difference: %f\n",diff);
@@ -80,7 +91,6 @@ void turn(volatile int *left_servo_encoder, volatile int *right_servo_encoder, v
     write_servo(0,left_servo,1);
     write_servo(0,right_servo,1);
 }
-
 
 float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
     float current_sensor = read_servo_pos(encoder_pointer);
@@ -157,36 +167,36 @@ int drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_s
 }
 
 
-void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder, float stop_distance){
-    float initial_lateral_dist = query_weighted_distances(1); //initial distance from wall
-    float backward_dist;
-    nanosleep((const struct timespec[]){{0, 100000000L}}, NULL); //delay of 100 milliseconds
+// void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder, float stop_distance){
+//     float initial_lateral_dist = query_weighted_distances(1); //initial distance from wall
+//     float backward_dist;
+//     nanosleep((const struct timespec[]){{0, 100000000L}}, NULL); //delay of 100 milliseconds
 
-    while(backward_dist < stop_distance){ //continue the loop until the plow is at the end of the driveway
-        int distance_sum = 0; //distance travelled since last query of distance from edge of driveway
-        int i = 0;
-        //drive for one second using encoder to correct direction
-        for(i = 0; i < 20; i++){ //loop 20 times, 50ms per iteration, equal to 1 second
-            distance_sum += drive_straight(inpspeed, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
-        }
-        //float distance_travelled = WHEEL_CIRCUMFERENCE * distance_sum; //distance travelled in cm
-        float lateral_dist_change = query_weighted_distances(1) - initial_lateral_dist; //amount of lateral change over one second drive
-        float distance_travelled = query_weighted_distances(2) - backward_dist;
-        //lateral distance change negative - bot has drifted right
-        //lateral distance change positive - bot has drifted left
-        float tan_ratio = lateral_dist_change / distance_travelled;
-        float angle_deg = (atan(tan_ratio) * 180) / PI;
-        printf("the angle being drive is: %f", angle_deg);
-        //correction of direction, assumes turn function changes BOT DIRECTION by ANGLE input
+//     while(backward_dist < stop_distance){ //continue the loop until the plow is at the end of the driveway
+//         int distance_sum = 0; //distance travelled since last query of distance from edge of driveway
+//         int i = 0;
+//         //drive for one second using encoder to correct direction
+//         for(i = 0; i < 20; i++){ //loop 20 times, 50ms per iteration, equal to 1 second
+//             distance_sum += drive_straight(inpspeed, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
+//         }
+//         //float distance_travelled = WHEEL_CIRCUMFERENCE * distance_sum; //distance travelled in cm
+//         float lateral_dist_change = query_weighted_distances(1) - initial_lateral_dist; //amount of lateral change over one second drive
+//         float distance_travelled = query_weighted_distances(2) - backward_dist;
+//         //lateral distance change negative - bot has drifted right
+//         //lateral distance change positive - bot has drifted left
+//         float tan_ratio = lateral_dist_change / distance_travelled;
+//         float angle_deg = (atan ((double)tan_ratio) * 180) / PI;
+//         printf("the angle being drive is: %f", angle_deg);
+//         //correction of direction, assumes turn function changes BOT DIRECTION by ANGLE input
 
-        write_servo(0, left_servo, 1); //stop bot
-        write_servo(0, right_servo, 0);
-        sleep(1);
-        turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, -angle_deg); //adjust angle
-        float backward_dist = query_weighted_distances(2); //senses when to break out of loop
-    }
-    print("Reached end\n");
-}
+//         write_servo(0, left_servo, 1); //stop bot
+//         write_servo(0, right_servo, 0);
+//         sleep(1);
+//         turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, angle_deg, 0); //adjust angle
+//         float backward_dist = query_weighted_distances(2); //senses when to break out of loop
+//     }
+//     printf("Reached end\n");
+// }
 
 
 void fwd_to_rev(int *left_servo, int *right_servo) {

@@ -5,13 +5,15 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <time.h>
+#include "math.h"
+#include "queue.c"
 #include "address_map_arm.h"
 #include "physical_address_access.h"
 #include "physical_address_access.c"
-#include "servo_drive_functions.c"
-#include "servo_drive_functions.h"
 #include "sensor_functions.h"
 #include "sensor_functions.c"
+#include "servo_drive_functions.c"
+#include "servo_drive_functions.h"
 
 
 // TODO: Add to address map
@@ -74,17 +76,17 @@ int main(void) {
     // Go Forward Distance
 
     sleep(5);
-    turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 320, 1);
+    turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 360, 1);
     write_servo(0, left_servo, 1);
     write_servo(0, right_servo, 0);
     sleep(5);
 
-    turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 320, -1);
+    turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 360, 0);
     write_servo(0, left_servo, 1);
     write_servo(0, right_servo, 0);
     sleep(5);
 
-    turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 320, 1);
+    turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 360, 1);
     write_servo(0, left_servo, 1);
     write_servo(0, right_servo, 0);
     printf("Killing Thread\n");
@@ -92,47 +94,44 @@ int main(void) {
     if (pthread_join(thread1, NULL)) {
         fprintf(stderr, "Error joining thread\n");
         return 2;
-
-         unmap_physical (LW_virtual, LW_BRIDGE_SPAN);
+    }
+    unmap_physical (LW_virtual, LW_BRIDGE_SPAN);
     close_physical (fd);
     return 0;
-    }
 }
 
 
     // **************  MAIN CODE STRUCTURE  *******************//
 
-    int driveway_length = 150; //how far it goes from wall
-    int wall_limit = 20; //how close it gets to the wall before initiating turn
-    int cutoff = 20; //distance from sidewall to stop running plow routine
+    // int driveway_length = 150; //how far it goes from wall
+    // int wall_limit = 20; //how close it gets to the wall before initiating turn
+    // int cutoff = 20; //distance from sidewall to stop running plow routine
 
-    //wait for push button
-    while (1) {
-        if (*push_button) {
-            break;
-        }
-    }
-    sleep(2); //delay after button pressed
+    // //wait for push button
+    // while (1) {
+    //     if (*push_button) {
+    //         break;
+    //     }
+    // }
+    // sleep(2); //delay after button pressed
 
-    while(1) {
-        //drive straight until it stops
-        drive_straight_ultrasonic(35, left_servo, right_servo, left_servo_encoder, right_servo_encoder, driveway_length);
-        //check to see when to break
-        if(query_weighted_distances(1) < cutoff){ break;}
-        //quick transition to reverse
-        fwd_to_rev(left_servo, right_servo);
-        //drive reverse until set distance from wall
-        drive_straight_ultrasonic(-35, left_servo, right_servo, left_servo_encoder, right_servo_encoder, wall_limit);
-        //right turn
-        turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 90, 0);
-        //go straight for one second
-        fwd_for_time(left_servo, right_servo, 1000000000);
-        //left turn
-        turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 90, 1);
-    }
+    // while(1) {
+    //     //drive straight until it stops
+    //     drive_straight_ultrasonic(35, left_servo, right_servo, left_servo_encoder, right_servo_encoder, driveway_length);
+    //     //check to see when to break
+    //     if(query_weighted_distances(1) < cutoff){ break;}
+    //     //quick transition to reverse
+    //     fwd_to_rev(left_servo, right_servo);
+    //     //drive reverse until set distance from wall
+    //     drive_straight_ultrasonic(-35, left_servo, right_servo, left_servo_encoder, right_servo_encoder, wall_limit);
+    //     //right turn
+    //     turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 90, 0);
+    //     //go straight for one second
+    //     fwd_for_time(left_servo, right_servo, 1000000000);
+    //     //left turn
+    //     turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 90, 1);
+    // }
 
-
-}
     /*// THREAD STUFF
 
 	//The arguments required for pthread_create():

@@ -5,7 +5,7 @@ int stopWhile = 1;
 
 struct Queue* queue1;
 struct Queue* queue2;
-int queueNum = 50;
+int queueNum = 15;
 int old_side = 0;
 
 
@@ -25,7 +25,7 @@ void weighted_distance_sensor(volatile int *sideways_sensor, volatile int *backw
 
     while(stopWhile){
         
-        nanosleep((const struct timespec[]){{0, 1000000L}}, NULL); //delay of 1 millisecond
+        nanosleep((const struct timespec[]){{0, 60000000L}}, NULL); //delay of 60 millisecond
         if(isFull(queue1)){
             dequeue(queue1);
         }

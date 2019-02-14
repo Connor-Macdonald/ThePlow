@@ -148,13 +148,9 @@ int drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_s
     }
     
 //    printf("R is: %f\tL is: %f\n", theta_r_diff, theta_l_diff);
-    if(inpspeed >= 0){
-        write_servo(inpspeed, left_servo, 1);
-        write_servo(r_speed + 8, right_servo, 0);
-    }else{
-        write_servo(inpspeed, left_servo, 1);
-        write_servo(r_speed - 8, right_servo, 0);
-    }
+    write_servo(inpspeed, left_servo, 1);
+    write_servo(r_speed + 8, right_servo, 0);
+
     return (theta_l_diff + theta_r_diff) / 2;
 
 }

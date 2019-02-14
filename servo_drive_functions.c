@@ -180,6 +180,7 @@ void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo,
 
         write_servo(0, left_servo, 1);
         write_servo(0, right_servo, 0);
+        sleep(1);
         turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, -angle_deg);
     }
 }

@@ -1,6 +1,7 @@
 #include "physical_address_access.h"
 #include "servo_drive_functions.h"
 
+
 float sensor1_old;
 float sensor2_old;
 
@@ -211,7 +212,7 @@ int drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_s
          //lateral distance change negative - bot has drifted right
          //lateral distance change positive - bot has drifted left
          float tan_ratio = lateral_dist_change / distance_travelled;
-         float angle_deg = (atan ((double)tan_ratio) * 180) / PI;
+         float angle_deg = (atan((double)tan_ratio) * 180) / PI;
          printf("the angle being drive is: %f", angle_deg);
          //correction of direction, assumes turn function changes BOT DIRECTION by ANGLE input
 

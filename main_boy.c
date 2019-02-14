@@ -71,24 +71,6 @@ int main(void) {
         }
     }
 
-   // turn(left_servo_encoder,right_servo_encoder,left_servo, right_servo, 320, 1);
-    // NOTE: 320 is 90 degree robot turn
-    // Go Forward Distance
-
-    sleep(5);
-    turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 360, 1);
-    write_servo(0, left_servo, 1);
-    write_servo(0, right_servo, 0);
-    sleep(5);
-
-    turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 360, 0);
-    write_servo(0, left_servo, 1);
-    write_servo(0, right_servo, 0);
-    sleep(5);
-
-    turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 360, 1);
-    write_servo(0, left_servo, 1);
-    write_servo(0, right_servo, 0);
     printf("Killing Thread\n");
     killWhile();
     if (pthread_join(thread1, NULL)) {

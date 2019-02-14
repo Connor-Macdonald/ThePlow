@@ -92,12 +92,28 @@ void turn(volatile int *left_servo_encoder,
     write_servo(0,right_servo,1);
 }
 
-
-float turn_hardcode(volatile int *left_servo, volatile int *right_servo, long time, int dir){ //dir = 1 is right turn
-    write_servo(0, left_servo, 1); //stop bot
-    write_servo((dir ? 30 : -30),right_servo, 0)
-    nanosleep((const struct timespec[]){{0, nanoseconds}}, NULL); //delay of 100 milliseconds
+void hardcode_left(){
+    write_servo(0, left_servo, 0);
+    write_servo(0, right_servo, 0);
+    write_servo(30, right_servo, 0);
+    nanosleep((const struct timespec[]){{2, 450000000L}}, NULL);
+    write_servo(0, left_servo, 0);
+    write_servo(0, right_servo, 0);
 }
+
+void hardcode_right(){
+    write_servo(0, left_servo, 0);
+    write_servo(0, right_servo, 0);
+    write_servo(30, right_servo, 1);
+    nanosleep((const struct timespec[]){{1, 720000000L}}, NULL);
+    write_servo(0, left_servo, 0);
+    write_servo(0, right_servo, 0);
+}
+// float turn_hardcode(volatile int *left_servo, volatile int *right_servo, long time, int dir){ //dir = 1 is right turn
+//     write_servo(0, left_servo, 1); //stop bot
+//     write_servo((dir ? 30 : -30),right_servo, 0);
+//     nanosleep((const struct timespec[]){{0, nanoseconds}}, NULL); //delay of 100 milliseconds
+// }
 
 
 float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){

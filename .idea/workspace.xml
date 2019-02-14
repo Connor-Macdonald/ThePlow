@@ -9,9 +9,10 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bdd1d223-10e1-4792-ab33-b3afd58979fb" name="Default Changelist" comment="Merge branch 'master' of https://github.com/Connor-Macdonald/ThePlow&#10;&#10;# Conflicts:&#10;#&#9;servo_drive_functions.c">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sensor_functions.c" beforeDir="false" afterPath="$PROJECT_DIR$/sensor_functions.c" afterDir="false" />
+    <list default="true" id="bdd1d223-10e1-4792-ab33-b3afd58979fb" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/main_boy.c" beforeDir="false" afterPath="$PROJECT_DIR$/main_boy.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/servo_drive_functions.c" beforeDir="false" afterPath="$PROJECT_DIR$/servo_drive_functions.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/servo_drive_functions.h" beforeDir="false" afterPath="$PROJECT_DIR$/servo_drive_functions.h" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -35,7 +36,7 @@
         <counts>
           <entry key="c" value="14" />
           <entry key="cpp" value="3" />
-          <entry key="h" value="10" />
+          <entry key="h" value="11" />
           <entry key="md" value="1" />
           <entry key="py" value="1" />
           <entry key="txt" value="3" />
@@ -44,23 +45,23 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CMakeLists.txt" value="3" />
-          <entry key="ObjectiveC" value="27" />
+          <entry key="ObjectiveC" value="28" />
           <entry key="PLAIN_TEXT" value="1" />
           <entry key="Python" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="c" value="3935" />
+          <entry key="c" value="5658" />
           <entry key="cpp" value="114" />
-          <entry key="h" value="188" />
+          <entry key="h" value="319" />
           <entry key="txt" value="85" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CMakeLists.txt" value="23" />
-          <entry key="ObjectiveC" value="4237" />
+          <entry key="ObjectiveC" value="6091" />
           <entry key="PLAIN_TEXT" value="62" />
         </counts>
       </usages-collector>
@@ -68,20 +69,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/servo_drive_functions.c">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/main_boy.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-54">
-              <caret line="151" lean-forward="true" selection-start-line="151" selection-end-line="151" />
+            <state relative-caret-position="182">
+              <caret line="115" column="4" lean-forward="true" selection-start-line="115" selection-start-column="4" selection-end-line="115" selection-end-column="4" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/sensor_functions.h">
+        <entry file="file://$PROJECT_DIR$/servo_drive_functions.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="465">
-              <caret line="31" selection-start-line="31" selection-end-line="31" />
+            <state relative-caret-position="145">
+              <caret line="186" lean-forward="true" selection-start-line="186" selection-end-line="186" />
             </state>
           </provider>
         </entry>
@@ -89,29 +90,20 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/servo_drive_functions.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="48" column="2" selection-start-line="48" selection-start-column="2" selection-end-line="48" selection-end-column="2" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/sensor_functions.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="855">
-              <caret line="57" lean-forward="true" selection-start-line="57" selection-end-line="57" />
-              <folding>
-                <element signature="e#0#29#0" expanded="true" />
-              </folding>
+            <state>
+              <caret line="31" column="14" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/main_boy.c">
+        <entry file="file://$PROJECT_DIR$/sensor_functions.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-219">
-              <caret line="55" selection-start-line="55" selection-end-line="55" />
+            <state relative-caret-position="105">
+              <caret line="7" column="18" lean-forward="true" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
+              <folding>
+                <element signature="e#0#29#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -143,11 +135,11 @@
         <option value="$PROJECT_DIR$/Adafruit_L3GD20_U.cpp" />
         <option value="$PROJECT_DIR$/AccelerometerReading.c" />
         <option value="$PROJECT_DIR$/sensor_functions.c" />
-        <option value="$PROJECT_DIR$/servo_drive_functions.h" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
-        <option value="$PROJECT_DIR$/main_boy.c" />
         <option value="$PROJECT_DIR$/main_bitch.py" />
+        <option value="$PROJECT_DIR$/servo_drive_functions.h" />
         <option value="$PROJECT_DIR$/servo_drive_functions.c" />
+        <option value="$PROJECT_DIR$/main_boy.c" />
       </list>
     </option>
   </component>
@@ -157,6 +149,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
+  <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectFrameBounds" fullScreen="true">
     <option name="width" value="1440" />
     <option name="height" value="900" />
@@ -225,8 +218,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17739628" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16309012" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -238,7 +232,7 @@
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.32891566" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="9" sideWeight="0.49713877" visible="true" weight="0.28554216" />
+      <window_info anchor="bottom" id="Terminal" order="9" sideWeight="0.49713877" visible="true" weight="0.27349398" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5028612" side_tool="true" weight="0.22048193" />
       <window_info anchor="bottom" id="CMake" order="11" sideWeight="0.4985694" weight="0.32891566" />
       <window_info anchor="bottom" id="Messages" order="12" weight="0.32891566" />
@@ -281,7 +275,8 @@
     <MESSAGE value="Merge branch 'master' of https://github.com/Connor-Macdonald/ThePlow&#10;&#10;# Conflicts:&#10;#&#9;main_boy.c" />
     <MESSAGE value="Merge branch 'master' of https://github.com/Connor-Macdonald/ThePlow&#10;&#10;# Please enter a commit message to explain why this merge is necessary,&#10;# especially if it merges an updated upstream into a topic branch.&#10;#&#10;# Lines starting with '#' will be ignored, and an empty message aborts&#10;# the commit." />
     <MESSAGE value="fuckkyaa" />
-    <option name="LAST_COMMIT_MESSAGE" value="fuckkyaa" />
+    <MESSAGE value="Merge branch 'master' of https://github.com/Connor-Macdonald/ThePlow&#10;&#10;# Conflicts:&#10;#&#9;servo_drive_functions.c" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'master' of https://github.com/Connor-Macdonald/ThePlow&#10;&#10;# Conflicts:&#10;#&#9;servo_drive_functions.c" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/README.md">
@@ -315,13 +310,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/servo_drive_functions.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="48" column="2" selection-start-line="48" selection-start-column="2" selection-end-line="48" selection-end-column="2" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/AccelerometerReading.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="220">
@@ -336,6 +324,9 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/main_bitch.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/sensor_functions.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="465">
@@ -343,30 +334,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main_bitch.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main_boy.c">
+    <entry file="file://$PROJECT_DIR$/sensor_functions.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-219">
-          <caret line="55" selection-start-line="55" selection-end-line="55" />
+        <state relative-caret-position="105">
+          <caret line="7" column="18" lean-forward="true" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/servo_drive_functions.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret line="31" column="14" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/servo_drive_functions.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-54">
-          <caret line="151" lean-forward="true" selection-start-line="151" selection-end-line="151" />
+        <state relative-caret-position="145">
+          <caret line="186" lean-forward="true" selection-start-line="186" selection-end-line="186" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/sensor_functions.c">
+    <entry file="file://$PROJECT_DIR$/main_boy.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="855">
-          <caret line="57" lean-forward="true" selection-start-line="57" selection-end-line="57" />
-          <folding>
-            <element signature="e#0#29#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="182">
+          <caret line="115" column="4" lean-forward="true" selection-start-line="115" selection-start-column="4" selection-end-line="115" selection-end-column="4" />
         </state>
       </provider>
     </entry>

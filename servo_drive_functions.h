@@ -46,6 +46,13 @@ Reads the duty cycle of the encoder and calculates its angle
 float read_servo_pos (volatile int *);
 
 
+//does a quick transition from fwd to reverse to transition back wheel
+void fwd_to_rev(int *left_servo, int *right_servo);
+
+//drive forward for set amount of seconds
+void fwd_for_time(int *left_servo, int *right_servo, float seconds) {
+
+
 /*
 drive straight while using the side ultrasonic distance sensor to monitor drift in direction
  */

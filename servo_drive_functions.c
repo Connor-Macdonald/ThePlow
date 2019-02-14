@@ -153,23 +153,21 @@ int drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_s
     write_servo(inpspeed, left_servo, 1);
     write_servo(r_speed + 8, right_servo, 0);
 
-    return (theta_l_diff + theta_r_diff) / 2;
-
+    return abs(theta_l_diff + theta_r_diff) / 2; //amount of change since last call
 }
 
 
-/*void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder, float stop_distance){
+void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder, float stop_distance){
     float initial_lateral_dist = query_weighted_distances(1); //initial distance from wall
     float backward_dist;
     nanosleep((const struct timespec[]){{0, 100000000L}}, NULL); //delay of 100 milliseconds
 
     while(backward_dist < stop_distance){ //continue the loop until the plow is at the end of the driveway
-        float backward_dist = query_weighted_distances(2); //senses when to break out of loop
         int distance_sum = 0; //distance travelled since last query of distance from edge of driveway
         int i = 0;
         //drive for one second using encoder to correct direction
         for(i = 0; i < 20; i++){ //loop 20 times, 50ms per iteration, equal to 1 second
-            distance_sum += drive_straight(35, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
+            distance_sum += drive_straight(inpspeed, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
         }
         //float distance_travelled = WHEEL_CIRCUMFERENCE * distance_sum; //distance travelled in cm
         float lateral_dist_change = query_weighted_distances(1) - initial_lateral_dist; //amount of lateral change over one second drive
@@ -180,9 +178,59 @@ int drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_s
         float angle_deg = (atan(tan_ratio) * 180) / PI;
         printf("the angle being drive is: %f", angle_deg);
         //correction of direction, assumes turn function changes BOT DIRECTION by ANGLE input
-        turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, -angle_deg);
+
+        write_servo(0, left_servo, 1); //stop bot
+        write_servo(0, right_servo, 0);
+        sleep(1);
+        turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, -angle_deg); //adjust angle
+        float backward_dist = query_weighted_distances(2); //senses when to break out of loop
     }
-}*/
+    print("Reached end\n");
+}
+
+
+void fwd_to_rev(int *left_servo, int *right_servo) {
+    write_servo(100, left_servo, 1); //stop bot
+    write_servo(100, right_servo, 0);
+    nanosleep((const struct timespec[]){{0, 500000000L}}, NULL); //delay of 500 milliseconds
+    write_servo(-100, left_servo, 1); //stop bot
+    write_servo(-100, right_servo, 0);
+    nanosleep((const struct timespec[]){{0, 500000000L}}, NULL); //delay of 500 milliseconds
+}
+
+
+void fwd_for_time(int *left_servo, int *right_servo, long nanoseconds) {
+    write_servo(30, left_servo, 1); //stop bot
+    write_servo(30, right_servo, 0);
+    nanosleep((const struct timespec[]){{0, nanoseconds}}, NULL); //delay of 100 milliseconds
+}
+
+
+
+//PSEUDO CODE TO ALLOW FOR REVERSE WITHIN THE DRIVE_STRAIGHT_ULTRASONIC
+
+/*
+fwd = 0;
+if(inpspeed > 0)
+    fwd = 1;
+flag = 0;
+while(flag == 0){
+    if(fwd == 1)
+        if(backward_dist < stop_dist)
+            flag = 1;
+    if(fwd == 0)
+        if(backward_dist > stop_dist)
+            flag = 1;
+}
+if(fwd == 0)
+    angle = -angle
+else
+    angle = angle
+*/
+
+
+
+
 
 
 

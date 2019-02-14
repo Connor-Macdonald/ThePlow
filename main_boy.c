@@ -35,15 +35,14 @@ void *sensor_thread(void *sensors){
     weighted_distance_sensor((*thread_sensors).sideways_sensor, (*thread_sensors).backwards_sensor);
 }
 
-int main(void)
-{
+int main(void) {
     printf("START\n");
     // Initialization of FPGA bridge
     int fd = -1; // used to open /dev/mem
     void *LW_virtual; // physical addresses for light-weight bridge
     // Create virtual memory access to the FPGA light-weight bridge
-    if ((fd = open_physical (fd)) == -1) return (-1);
-    if (!(LW_virtual = map_physical (fd, LW_BRIDGE_BASE, LW_BRIDGE_SPAN))) return (-1);
+    if ((fd = open_physical(fd)) == -1) return (-1);
+    if (!(LW_virtual = map_physical(fd, LW_BRIDGE_BASE, LW_BRIDGE_SPAN))) return (-1);
 
     // Initialize all the nessacary virtual address pointers
 	volatile int * left_servo = (unsigned int *) (LW_virtual + LEFT_SERVO);
@@ -90,7 +89,7 @@ int main(void)
     write_servo(0, right_servo, 0);
     printf("Killing Thread\n");
     killWhile();
-    if(pthread_join(thread1, NULL)) {
+    if (pthread_join(thread1, NULL)) {
         fprintf(stderr, "Error joining thread\n");
         return 2;
 
@@ -100,8 +99,41 @@ int main(void)
     }
 }
 
-    /* 
-    THREAD STUFF
+
+    // **************  MAIN CODE STRUCTURE  *******************//
+
+    int driveway_length = 150; //how far it goes from wall
+    int wall_limit = 20; //how close it gets to the wall before initiating turn
+    int cutoff = 20; //distance from sidewall to stop running plow routine
+
+    //wait for push button
+    while (1) {
+        if (*push_button) {
+            break;
+        }
+    }
+    sleep(2); //delay after button pressed
+
+    while(1) {
+        //drive straight until it stops
+        drive_straight_ultrasonic(35, left_servo, right_servo, left_servo_encoder, right_servo_encoder, driveway_length);
+        //check to see when to break
+        if(query_weighted_distances(1) < cutoff){ break;}
+        //quick transition to reverse
+        fwd_to_rev(left_servo, right_servo);
+        //drive reverse until set distance from wall
+        drive_straight_ultrasonic(-35, left_servo, right_servo, left_servo_encoder, right_servo_encoder, wall_limit);
+        //right turn
+        turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 90, 0);
+        //go straight for one second
+        fwd_for_time(left_servo, right_servo, 1000000000);
+        //left turn
+        turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 90, 1);
+    }
+
+
+}
+    /*// THREAD STUFF
 
 	//The arguments required for pthread_create():
     //    pthread_t *thread: the actual thread object that contains pthread id

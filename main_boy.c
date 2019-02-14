@@ -120,11 +120,11 @@ int main(void) {
          //drive reverse until set distance from wall
          straight_hardcode(left_servo, right_servo, 20);
          //right turn
-         turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 90, 0);
+         hardcode_right(left_servo, right_servo);
          //go straight for one second
          fwd_for_time(left_servo, right_servo, 1000000000);
          //left turn
-         turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 90, 1);
+         hardcode_left(left_servo, right_servo);
 }
 
     /*// THREAD STUFF

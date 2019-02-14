@@ -213,7 +213,7 @@ int drive_straight (int inpspeed, volatile int *left_servo, volatile int *right_
 }
 
 
- void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder, float stop_distance){
+ void drive_straight_ultrasonic (int inpspeed, volatile int *left_servo, volatile int *right_servo, volatile int *left_servo_encoder, volatile int *right_servo_encoder, float stop_distance){
      float initial_lateral_dist = query_weighted_distances(1); //initial distance from wall
      float backward_dist;
      nanosleep((const struct timespec[]){{0, 100000000L}}, NULL); //delay of 100 milliseconds
@@ -242,19 +242,19 @@ int drive_straight (int inpspeed, volatile int *left_servo, volatile int *right_
 
          if(angle_deg > 0){ //right turn
              int dir = 1;
-             float time = angle_deg * (2.45 / 90);
+             float t = angle_deg * (2.45 / 90);
          }else{ //left turn
              int dir = 0;
-             float time = angle_deg * (1.72 / 90);
+             float t = angle_deg * (1.72 / 90);
          }
-         float turn_hardcode(left_servo, right_servo, long time, int dir); //dir = 1 is right turn
+         float turn_hardcode(left_servo, right_servo, t, dir); //dir = 1 is right turn
          float backward_dist = query_weighted_distances(2); //senses when to break out of loop
      }
      printf("Reached end\n");
  }
 
 
-void fwd_to_rev(int *left_servo, int *right_servo) {
+void fwd_to_rev(volatile int *left_servo, volatile int *right_servo) {
     write_servo(100, left_servo, 1); //stop bot
     write_servo(100, right_servo, 0);
     nanosleep((const struct timespec[]){{0, 500000000L}}, NULL); //delay of 500 milliseconds
@@ -264,7 +264,7 @@ void fwd_to_rev(int *left_servo, int *right_servo) {
 }
 
 
-void fwd_for_time(int *left_servo, int *right_servo, long nanoseconds) {
+void fwd_for_time(volatile int *left_servo, volatile int *right_servo, long nanoseconds) {
     write_servo(30, left_servo, 1); //stop bot
     write_servo(30, right_servo, 0);
     nanosleep((const struct timespec[]){{0, nanoseconds}}, NULL); //delay of 100 milliseconds

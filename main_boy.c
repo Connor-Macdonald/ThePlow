@@ -73,13 +73,7 @@ int main(void) {
             }
         }
 
-        while(1){
-            write_servo(35, left_servo, 1);
-            write_servo(43, right_servo, 0);
-            if(query_weighted_distances(2) > 100){
-                break;
-            }
-        }
+        drive_straight_ultrasonic(35, left_servo, right_servo, left_servo_encoder, right_servo_encoder, 100);
         write_servo(0, left_servo, 1);
         write_servo(0, right_servo, 0);
     }

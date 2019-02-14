@@ -56,7 +56,7 @@ void fwd_for_time(int *left_servo, int *right_servo, float seconds) {
 /*
 drive straight while using the side ultrasonic distance sensor to monitor drift in direction
  */
-void drive_straight_ultrasonic (int, int *, int *, int *, int *, float );
+void drive_straight_ultrasonic (int, volatile int *, volatile int *, volatile int *, volatile int *, float );
 
 
 /*

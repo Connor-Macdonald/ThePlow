@@ -111,6 +111,25 @@ void hardcode_right(){
     write_servo(0, right_servo, 0);
 }
 
+void straight_hardcode(volatile int *left_servo, volatile int *right_servo, int stop_distance){
+    float backward_dist = 0;
+    while(backward_dist < stop_distance){ //continue the loop until the plow is at the end of the driveway
+        write_servo_direct(35, left_servo, 1);
+        write_servo(43, right_servo, 0);
+        float backward_dist = query_weighted_distances(2); //senses when to break out of loop
+    }
+}
+
+void reverse_hardcode(volatile int *left_servo, volatile int *right_servo, int wall_gap){
+    float backward_dist = 0;
+    while(backward_dist > wall_gap){ //continue the loop until the plow is at the end of the driveway
+        write_servo_direct(35, left_servo, 1);
+        write_servo(43, right_servo, 0);
+        float backward_dist = query_weighted_distances(2); //senses when to break out of loop
+    }
+}
+
+
 
 float turn_hardcode(volatile int *left_servo, volatile int *right_servo, long time, int dir){ //dir = 1 is right turn
      write_servo(0, left_servo, 1); //stop bot

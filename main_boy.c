@@ -47,13 +47,13 @@ int main(void) {
     if (!(LW_virtual = map_physical(fd, LW_BRIDGE_BASE, LW_BRIDGE_SPAN))) return (-1);
 
     // Initialize all the nessacary virtual address pointers
-    volatile int *left_servo = (unsigned int *) (LW_virtual + LEFT_SERVO);
-    volatile int *right_servo = (unsigned int *) (LW_virtual + RIGHT_SERVO);
-    volatile int *left_servo_encoder = (int *) (LW_virtual + LEFT_SERVO_ENCODER);
-    volatile int *right_servo_encoder = (int *) (LW_virtual + RIGHT_SERVO_ENCODER);
-    volatile int *dist_1 = (int *) (LW_virtual + DIST_SENSOR_1);
-    volatile int *dist_2 = (int *) (LW_virtual + DIST_SENSOR_2);
-    volatile int *push_button = (int *) (LW_virtual + 0x00000050);
+	volatile int * left_servo = (unsigned int *) (LW_virtual + LEFT_SERVO);
+    volatile int * right_servo = (unsigned int *) (LW_virtual + RIGHT_SERVO);
+    volatile int * left_servo_encoder = (int *) (LW_virtual + LEFT_SERVO_ENCODER);
+    volatile int * right_servo_encoder = (int *) (LW_virtual + RIGHT_SERVO_ENCODER);
+    volatile int * dist_1 = (int *) (LW_virtual + DIST_SENSOR_1);
+    volatile int * dist_2 = (int *) (LW_virtual + DIST_SENSOR_2);
+	volatile int * push_button = (int *) (LW_virtual + 0x00000050);
 
     struct Dist_sensor sensors; //pass both sensors to thread
     sensors.sideways_sensor = dist_1;
@@ -61,22 +61,22 @@ int main(void) {
 
     pthread_t thread1;
     printf("Starting thread\n");
-    pthread_create(&thread1, NULL, sensor_thread, (void *) &sensors);
+    pthread_create(&thread1, NULL, sensor_thread, (void*) &sensors);
 
     write_servo(0, left_servo, 1);
     write_servo(0, right_servo, 0);
     int i;
-    for (i = 0; i < 5; i++) {
-        while (1) {
-            if (*push_button) {
+    for(i = 0; i < 5; i++){
+        while(1){
+            if(*push_button){
                 break;
             }
         }
 
-        while (1) {
+        while(1){
             write_servo(35, left_servo, 1);
             write_servo(43, right_servo, 0);
-            if (query_weighted_distances(2) > 100) {
+            if(query_weighted_distances(2) > 100){
                 break;
             }
         }
@@ -90,42 +90,42 @@ int main(void) {
         fprintf(stderr, "Error joining thread\n");
         return 2;
     }
-    unmap_physical(LW_virtual, LW_BRIDGE_SPAN);
-    close_physical(fd);
+    unmap_physical (LW_virtual, LW_BRIDGE_SPAN);
+    close_physical (fd);
     return 0;
 
 
 
     // **************  MAIN CODE STRUCTURE  *******************//
 
-    int driveway_length = 150; //how far it goes from wall
-    int wall_limit = 20; //how close it gets to the wall before initiating turn
-    int cutoff = 20; //distance from sidewall to stop running plow routine
+     int driveway_length = 150; //how far it goes from wall
+     int wall_limit = 20; //how close it gets to the wall before initiating turn
+     int cutoff = 20; //distance from sidewall to stop running plow routine
 
-    //wait for push button
-    while (1) {
-        if (*push_button) {
-            break;
-        }
-    }
-    sleep(2); //delay after button pressed
+     //wait for push button
+     while (1) {
+         if (*push_button) {
+             break;
+         }
+     }
+     sleep(2); //delay after button pressed
 
-    while (1) {
-        //drive straight until it stops
-        straight_hardcode(left_servo, right_servo, 150);
-        //check to see when to break
-        if (query_weighted_distances(1) < cutoff) { break; }
-        //quick transition to reverse
-        fwd_to_rev(left_servo, right_servo);
-        //drive reverse until set distance from wall
-        straight_hardcode(left_servo, right_servo, 20);
-        //right turn
-        hardcode_right(left_servo, right_servo);
-        //go straight for one second
-        fwd_for_time(left_servo, right_servo, 1000000000);
-        //left turn
-        hardcode_left(left_servo, right_servo);
-    }
+     while(1) {
+         //drive straight until it stops
+         straight_hardcode(left_servo, right_servo, 150);
+         //check to see when to break
+         if(query_weighted_distances(1) < cutoff){ break;}
+         //quick transition to reverse
+         fwd_to_rev(left_servo, right_servo);
+         //drive reverse until set distance from wall
+         straight_hardcode(left_servo, right_servo, 20);
+         //right turn
+         hardcode_right(left_servo, right_servo);
+         //go straight for one second
+         fwd_for_time(left_servo, right_servo, 1000000000);
+         //left turn
+         hardcode_left(left_servo, right_servo);
+}
 
     /*// THREAD STUFF
 
@@ -138,5 +138,4 @@ int main(void) {
     //NOTE: when compiling: gcc main_boy.c -o main_boy -lpthread
     // Unmap FPGA bridge
     */
-
-}
+   

@@ -17,8 +17,8 @@
 // TODO: Add to address map
 #define LEFT_SERVO 0x00000010
 #define RIGHT_SERVO 0x00000018
-#define RIGHT_SERVO_ENCODER 0x00000020
-#define LEFT_SERVO_ENCODER 0x00000030
+#define RIGHT_SERVO_ENCODER 0x00000030
+#define LEFT_SERVO_ENCODER 0x00000020
 #define DIST_SENSOR_1 0x00000040
 #define DIST_SENSOR_2 0x00000048
 
@@ -48,8 +48,8 @@ int main(void)
     // Initialize all the nessacary virtual address pointers
 	volatile int * left_servo = (unsigned int *) (LW_virtual + LEFT_SERVO);
     volatile int * right_servo = (unsigned int *) (LW_virtual + RIGHT_SERVO);
-    volatile int * left_servo_encoder = (int *) (LW_virtual + RIGHT_SERVO_ENCODER);
-    volatile int * right_servo_encoder = (int *) (LW_virtual + LEFT_SERVO_ENCODER);
+    volatile int * left_servo_encoder = (int *) (LW_virtual + LEFT_SERVO_ENCODER);
+    volatile int * right_servo_encoder = (int *) (LW_virtual + RIGHT_SERVO_ENCODER);
     volatile int * dist_1 = (int *) (LW_virtual + DIST_SENSOR_1);
     volatile int * dist_2 = (int *) (LW_virtual + DIST_SENSOR_2);
 	volatile int * push_button = (int *) (LW_virtual + 0x00000050);
@@ -61,6 +61,9 @@ int main(void)
     pthread_t thread1;
     printf("Starting thread\n");
     pthread_create(&thread1, NULL, sensor_thread, (void*) &sensors);
+
+    write_servo(0, left_servo, 1);
+    write_servo(0, right_servo, 0);
     while(1){
         if(*push_button){
             break;
@@ -68,28 +71,21 @@ int main(void)
     }
 
    // turn(left_servo_encoder,right_servo_encoder,left_servo, right_servo, 320, 1);
-    sleep(3);
-    
+    // NOTE: 320 is 90 degree robot turn
     // Go Forward Distance
-    while(1){
-        drive_straight(35, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
-        float rev_encoder = query_weighted_distances(2);
-        float side_encoder = query_weighted_distances(1);
-        printf("BACKDISTANCE: %f, SIDEDISTANCE: %f\n", rev_encoder, side_encoder);
-        if(*push_button){
-            sleep(1);
-            break;
-        }
-    }
-    // Drive Backwards
-    while(1){
-        drive_straight(-35, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
-        if(*push_button){
-            sleep(1);
-            break;
-        }
-    }
 
+    sleep(5);
+    turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 320, 1);
+    write_servo(0, left_servo, 1);
+    write_servo(0, right_servo, 0);
+    sleep(5);
+
+    turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 320, -1);
+    write_servo(0, left_servo, 1);
+    write_servo(0, right_servo, 0);
+    sleep(5);
+
+    turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 320, 1);
     write_servo(0, left_servo, 1);
     write_servo(0, right_servo, 0);
     printf("Killing Thread\n");
@@ -97,9 +93,15 @@ int main(void)
     if(pthread_join(thread1, NULL)) {
         fprintf(stderr, "Error joining thread\n");
         return 2;
-    }
 
-    /*// THREAD STUFF
+         unmap_physical (LW_virtual, LW_BRIDGE_SPAN);
+    close_physical (fd);
+    return 0;
+    }
+}
+
+    /* 
+    THREAD STUFF
 
 	//The arguments required for pthread_create():
     //    pthread_t *thread: the actual thread object that contains pthread id
@@ -109,6 +111,5 @@ int main(void)
 
     //NOTE: when compiling: gcc main_boy.c -o main_boy -lpthread
     // Unmap FPGA bridge
-    unmap_physical (LW_virtual, LW_BRIDGE_SPAN);
-    close_physical (fd);
-    return 0;
+    */
+   

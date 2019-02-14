@@ -53,26 +53,29 @@ float read_servo_pos (volatile int *encoder_pointer) {
 void turn(volatile int *left_servo_encoder, volatile int *right_servo_encoder, volatile int *left_servo, volatile int *right_servo, float targetChange, int dir){
     write_servo((dir ? 30 : -30),right_servo,0); // if the dir is 1, then we go fw, else bw
     //float encodeL = read_servo_pos(left_servo_encoder);
-    float encodeR = read_servo_pos(right_servo_encoder);
-    float prevEncode = encodeR;
-    int targetAngle = ((int)targetChange + (int)encodeR)%360;
-    int numPass = targetChange/360;
-    printf("Current Encode: %f:     Targetting: %d\n",encodeR,targetAngle);
-    do{
-        while((encodeR >= (targetAngle + 5)) || (encodeR <= targetAngle - 5)){
+    float encodeR;
+    float prevEncode = read_servo_pos(right_servo_encoder);;
+    float diff = 0.0;
+    while(diff < targetChange){
+        encodeR = read_servo_pos(right_servo_encoder);
+        while((abs(encodeR-prevEncode) >= 4) && (abs(encodeR-prevEncode) <= 345)){ // ensure readings are accurate
             encodeR = read_servo_pos(right_servo_encoder);
-            while(abs(encodeR-prevEncode) >= 4){ // ensure readings are accurate
-                encodeR = read_servo_pos(right_servo_encoder);
-                //                                      smmmMMMNNN updates every 1/800th of a second
-                nanosleep((const struct timespec[]){{0, 0010000000L}}, NULL);
-            }
-            printf("Encoder 2 (right): %f\n",encodeR);
-            nanosleep((const struct timespec[]){{0, 0010000000L}}, NULL);
-            prevEncode = encodeR;
-            
+            printf("Bad Value!!!!");
+            //                                      smmmMMMNNN updates every 1/800th of a second
+            nanosleep((const struct timespec[]){{0, 0005000000L}}, NULL);
         }
-        numPass--;
-    }while(numPass >= 0);
+        //printf("Previous: %f \t New: %f \t Diff: %d \n", prevEncode, encodeR, abs(encodeR-prevEncode));
+        nanosleep((const struct timespec[]){{0, 0005000000L}}, NULL);
+        if (encodeR < 60 && prevEncode > 300){
+            diff += encodeR + (360 - prevEncode);
+        }else if (encodeR > 300 && prevEncode < 60){
+            diff += prevEncode + (360 - encodeR);
+        }else{
+            diff += (abs(prevEncode - encodeR));
+        }
+        prevEncode = encodeR;
+        printf("Difference: %f\n",diff);
+    }
 	printf("Stopping wheels with reading %f\n",encodeR);
     write_servo(0,left_servo,1);
     write_servo(0,right_servo,1);

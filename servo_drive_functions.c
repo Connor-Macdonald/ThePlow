@@ -155,7 +155,7 @@ int drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_s
 }
 
 
-/*void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder, float stop_distance){
+void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder, float stop_distance){
     float initial_lateral_dist = query_weighted_distances(1); //initial distance from wall
     float backward_dist;
     nanosleep((const struct timespec[]){{0, 100000000L}}, NULL); //delay of 100 milliseconds
@@ -177,9 +177,12 @@ int drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_s
         float angle_deg = (atan(tan_ratio) * 180) / PI;
         printf("the angle being drive is: %f", angle_deg);
         //correction of direction, assumes turn function changes BOT DIRECTION by ANGLE input
+
+        write_servo(0, left_servo, 1);
+        write_servo(0, right_servo, 0);
         turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, -angle_deg);
     }
-}*/
+}
 
 
 

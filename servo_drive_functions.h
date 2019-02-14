@@ -47,10 +47,10 @@ float read_servo_pos (volatile int *);
 
 
 //does a quick transition from fwd to reverse to transition back wheel
-void fwd_to_rev(int *left_servo, int *right_servo);
+void fwd_to_rev(volatile int *, volatile int *);
 
 //drive forward for set amount of seconds
-void fwd_for_time(int *left_servo, int *right_servo, float seconds) {
+void fwd_for_time(volatile int *, volatile int *, float );
 
 
 /*

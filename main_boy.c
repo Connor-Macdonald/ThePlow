@@ -60,30 +60,83 @@ int main(void) {
     sensors.backwards_sensor = dist_2;
 
     pthread_t thread1;
-    printf("Starting thread\n");
-    pthread_create(&thread1, NULL, sensor_thread, (void *) &sensors);
-
     write_servo(0, left_servo, 1);
     write_servo(0, right_servo, 0);
-    int i;
-    for (i = 0; i < 5; i++) {
-        while (1) {
-            if (*push_button) {
-                break;
-            }
-        }
+    printf("Starting thread\n");
+    pthread_create(&thread1, NULL, sensor_thread, (void *) &sensors);
+    printf("Hello? \n");
+    
 
-        while (1) {
-            write_servo(35, left_servo, 1);
-            write_servo(43, right_servo, 0);
-            if (query_weighted_distances(2) > 100) {
-                break;
-            }
-        }
+    // **************  MAIN CODE STRUCTURE  *******************//
+
+    int driveway_length = 150; //how far it goes from wall
+    int wall_limit = 20; //how close it gets to the wall before initiating turn
+    int cutoff = 20; //distance from sidewall to stop running plow routine
+
+    //wait for push button
+    
+    while(1){
+        sleep(2);
         write_servo(0, left_servo, 1);
         write_servo(0, right_servo, 0);
+        while (1) {
+            if (*push_button==1) {
+                break;
+            }
+            if (*push_button >= 2){
+                return 0;
+            }
+        }
+        sleep(2); //delay after button pressed
+        while (1) {
+            //drive straight until it stops
+            //straight_hardcode(left_servo, right_servo, 50);
+            //check to see when to break
+            write_servo(35, left_servo, 1); //stop bot
+            write_servo(43, right_servo, 0);
+            sleep(4);
+            if (query_weighted_distances(1) < cutoff) { break; }
+            //quick transition to reverse
+            if (*push_button) {
+                while(!*push_button) {}
+                    break;
+            }
+            fwd_to_rev(left_servo, right_servo);
+            //drive reverse until set distance from wall
+            if (*push_button) {
+                while(!*push_button) {}
+                    break;
+            }
+            reverse_hardcode(left_servo, right_servo, 15);
+            //right turn
+            if (*push_button) {
+                while(!*push_button) {}
+                    break;
+            }
+            write_servo(-35, left_servo, 1); //stop bot
+            write_servo(-27, right_servo, 0);
+            sleep(4);
+            //hardcode_right(left_servo, right_servo);
+            //go straight for one second
+            if (*push_button) {
+                while(!*push_button) {}
+                    break;
+            }
+            write_servo(30, left_servo, 1); //stop bot
+            write_servo(38, right_servo, 0);
+            nanosleep((const struct timespec[]){{1, 999999999}}, NULL); 
+            //left turn
+            if (*push_button) {
+                while(!*push_button) {}
+                    break;
+            }
+            hardcode_left(left_servo, right_servo);
+            if (*push_button) {
+                while(!*push_button) {}
+                    break;
+            }
+        }
     }
-
     printf("Killing Thread\n");
     killWhile();
     if (pthread_join(thread1, NULL)) {
@@ -93,40 +146,7 @@ int main(void) {
 
     unmap_physical(LW_virtual, LW_BRIDGE_SPAN);
     close_physical(fd);
-    //return 0;
-
-
-
-    // **************  MAIN CODE STRUCTURE  *******************//
-
-    int driveway_length = 150; //how far it goes from wall
-    int wall_limit = 20; //how close it gets to the wall before initiating turn
-    int cutoff = 20; //distance from sidewall to stop running plow routine
-
-    //wait for push button
-    while (1) {
-        if (*push_button) {
-            break;
-        }
-    }
-    sleep(2); //delay after button pressed
-
-    while (1) {
-        //drive straight until it stops
-        straight_hardcode(left_servo, right_servo, 150);
-        //check to see when to break
-        if (query_weighted_distances(1) < cutoff) { break; }
-        //quick transition to reverse
-        fwd_to_rev(left_servo, right_servo);
-        //drive reverse until set distance from wall
-        straight_hardcode(left_servo, right_servo, 20);
-        //right turn
-        hardcode_right(left_servo, right_servo);
-        //go straight for one second
-        fwd_for_time(left_servo, right_servo, 1000000000);
-        //left turn
-        hardcode_left(left_servo, right_servo);
-    }
+    return 0;
 }
 
     /*// THREAD STUFF

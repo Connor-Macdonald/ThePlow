@@ -93,7 +93,7 @@ void turn(volatile int *left_servo_encoder,
     write_servo(0,right_servo,1);
 }
 
-void hardcode_left(int *left_servo, int *right_servo){
+void hardcode_left(volatile int *left_servo, volatile int *right_servo){
     write_servo(0, left_servo, 0);
     write_servo(0, right_servo, 0);
     write_servo(30, right_servo, 0);
@@ -102,7 +102,7 @@ void hardcode_left(int *left_servo, int *right_servo){
     write_servo(0, right_servo, 0);
 }
 
-void hardcode_right(int *left_servo, int *right_servo){
+void hardcode_right(int volatile *left_servo, int volatile *right_servo){
     write_servo(0, left_servo, 0);
     write_servo(0, right_servo, 0);
     write_servo(30, right_servo, 1);
@@ -112,20 +112,25 @@ void hardcode_right(int *left_servo, int *right_servo){
 }
 
 void straight_hardcode(volatile int *left_servo, volatile int *right_servo, int stop_distance){
-    float backward_dist = 0;
-    while(backward_dist < stop_distance){ //continue the loop until the plow is at the end of the driveway
-        write_servo_direct(35, left_servo, 1);
-        write_servo(43, right_servo, 0);
-        float backward_dist = query_weighted_distances(2); //senses when to break out of loop
+    write_servo(35, left_servo, 1);
+    write_servo(43, right_servo, 0);
+    while(1){ //continue the loop until the plow is at the end of the driveway
+        nanosleep((const struct timespec[]){{0, 70000000L}}, NULL);
+        printf("Dist: %f \n", query_weighted_distances(2));
+        if(query_weighted_distances(2) > stop_distance){
+            break;
+        }
     }
 }
 
 void reverse_hardcode(volatile int *left_servo, volatile int *right_servo, int wall_gap){
-    float backward_dist = 0;
-    while(backward_dist > wall_gap){ //continue the loop until the plow is at the end of the driveway
-        write_servo_direct(35, left_servo, 1);
-        write_servo(43, right_servo, 0);
-        float backward_dist = query_weighted_distances(2); //senses when to break out of loop
+    write_servo(-35, left_servo, 1);
+    write_servo(-27, right_servo, 0);
+    while(1){ //continue the loop until the plow is at the end of the driveway
+    nanosleep((const struct timespec[]){{0, 70000000L}}, NULL);
+        printf("DistR: %f \n", query_weighted_distances(2));
+        if(query_weighted_distances(2) < wall_gap)
+            break;
     }
 }
 
@@ -254,7 +259,7 @@ float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
 // }
 
 
-void fwd_to_rev(int *left_servo, int *right_servo) {
+void fwd_to_rev(int volatile *left_servo, int volatile *right_servo) {
     write_servo(100, left_servo, 1); //stop bot
     write_servo(100, right_servo, 0);
     nanosleep((const struct timespec[]){{0, 500000000L}}, NULL); //delay of 500 milliseconds
@@ -264,11 +269,11 @@ void fwd_to_rev(int *left_servo, int *right_servo) {
 }
 
 
-void fwd_for_time(int *left_servo, int *right_servo, long nanoseconds) {
-    write_servo(30, left_servo, 1); //stop bot
-    write_servo(30, right_servo, 0);
-    nanosleep((const struct timespec[]){{0, nanoseconds}}, NULL); //delay of 100 milliseconds
-}
+// void fwd_for_time(int volatile *left_servo, int volatile *right_servo, long nanoseconds) {
+//     write_servo(30, left_servo, 1); //stop bot
+//     write_servo(30, right_servo, 0);
+//     nanosleep((const struct timespec[]){{0, nanoseconds}}, NULL); //delay of 100 milliseconds
+// }
 
 
 

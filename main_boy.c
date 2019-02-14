@@ -22,8 +22,6 @@
 #define DIST_SENSOR_1 0x00000040
 #define DIST_SENSOR_2 0x00000048
 
-
-
 struct Dist_sensor
 {
    /* data */
@@ -31,75 +29,15 @@ struct Dist_sensor
     volatile int *backwards_sensor;
 };
 
-void testSpeeds(volatile int *left_servo, volatile int *right_servo, volatile int *push_button){
-
-    //RESULTS
-    // So far L:35 R:43 provides the straightest line
-    // right should be 8 bigger
-    sleep(2);
-    write_servo(70, left_servo, 1);
-    write_servo(78, right_servo, 0);
-    while(1){
-        if(*push_button){
-            break;
-        }
-    }
-    write_servo(0, left_servo, 1);
-    write_servo(0, right_servo, 0);
-    sleep(2);
-    write_servo(70, left_servo, 1);
-    write_servo(79, right_servo, 0);
-    while(1){
-        if(*push_button){
-            break;
-        }
-    }
-    write_servo(0, left_servo, 1);
-    write_servo(0, right_servo, 0);
-    sleep(2);
-    write_servo(70, left_servo, 1);
-    write_servo(80, right_servo, 0);
-    while(1){
-        if(*push_button){
-            break;
-        }
-    }
-    write_servo(0, left_servo, 1);
-    write_servo(0, right_servo, 0);
-    sleep(2);
-    write_servo(70, left_servo, 1);
-    write_servo(81, right_servo, 0);
-    while(1){
-        if(*push_button){
-            break;
-        }
-    }
-    write_servo(0, left_servo, 1);
-    write_servo(0, right_servo, 0);
-}
-
-/*
-compile command is gcc thread.c -thread
-
-Good thread tutorial for pthread.h
-https://randu.org/tutorials/threads/
-
-Tutorial on how to pass multiple arguments in threads
-http://www.cse.cuhk.edu.hk/~ericlo/teaching/os/lab/9-PThread/Pass.html
-
-Random thread function for testing
-void* is used when working with different pointer types
-*/
 void *sensor_thread(void *sensors){
     struct Dist_sensor *thread_sensors = (struct Dist_sensor*)sensors;
     printf("IN THREAD");
     weighted_distance_sensor((*thread_sensors).sideways_sensor, (*thread_sensors).backwards_sensor);
 }
 
-
 int main(void)
 {
-    printf("START");
+    printf("START\n");
     // Initialization of FPGA bridge
     int fd = -1; // used to open /dev/mem
     void *LW_virtual; // physical addresses for light-weight bridge
@@ -116,8 +54,7 @@ int main(void)
     volatile int * dist_2 = (int *) (LW_virtual + DIST_SENSOR_2);
 	volatile int * push_button = (int *) (LW_virtual + 0x00000050);
 
-    struct Dist_sensor sensors;
-
+    struct Dist_sensor sensors; //pass both sensors to thread
     sensors.sideways_sensor = dist_1;
     sensors.backwards_sensor = dist_2;
 
@@ -162,26 +99,6 @@ int main(void)
         return 2;
     }
 
-
-    //STARTING TO COMMENT OUT HERE
-    /* Code to make it move forward
-    TODO: place into function
-    write_servo(0, right_servo);
-    write_servo(0, left_servo);
-
-    Reads distance sensor
-    TODO: place into function.
-    while(1){
-        float dist1 = read_distance_sensor(dist_1);
-        float dist2 = read_distance_sensor(dist_2);
-
-        printf("Distance sensor #1: %f\n", dist1);
-        printf("Distance sensor #2: %f\n", dist2);
-        sleep(1);
-    }
-    ENDING COMMENT HERE */
-
-
     /*// THREAD STUFF
 
 	//The arguments required for pthread_create():
@@ -191,42 +108,7 @@ int main(void)
     //    void *arg: arguments to pass to thread function above
 
     //NOTE: when compiling: gcc main_boy.c -o main_boy -lpthread
-    printf("calling 1\n");
-    //creating thread 1
-	pthread_t thread1;
-    pthread_create(&thread1, NULL, routing, NULL);
-    printf("calling 2\n");
-    //creating thread 2
-	pthread_t thread2;
-    pthread_create(&thread2, NULL, positionCalc, NULL);
-
-   printf("calling 3\n");
-   //creating thread 3
-   //creating thread 3
-	pthread_t thread3;
-    int z =3;
-    pthread_create(&thread3, NULL, sensorPos, &z);
-
-    if(pthread_join(thread1, NULL)) {
-        fprintf(stderr, "Error joining thread\n");
-        return 2;
-
-    }
-    if(pthread_join(thread2, NULL)) {
-        fprintf(stderr, "Error joining thread\n");
-        return 2;
-
-    }
-      if(pthread_join(thread3, NULL)) {
-        fprintf(stderr, "Error joining thread\n");
-        return 2;
-
-    }*/
-
     // Unmap FPGA bridge
     unmap_physical (LW_virtual, LW_BRIDGE_SPAN);
     close_physical (fd);
     return 0;
-
-
-}

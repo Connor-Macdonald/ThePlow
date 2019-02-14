@@ -186,6 +186,24 @@ void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo,
 }
 
 
+void fwd_to_rev(int *left_servo, int *right_servo) {
+    write_servo(100, left_servo, 1); //stop bot
+    write_servo(100, right_servo, 0);
+    nanosleep((const struct timespec[]){{0, 500000000L}}, NULL); //delay of 500 milliseconds
+    write_servo(-100, left_servo, 1); //stop bot
+    write_servo(-100, right_servo, 0);
+    nanosleep((const struct timespec[]){{0, 500000000L}}, NULL); //delay of 500 milliseconds
+}
+
+
+void fwd_for_time(int *left_servo, int *right_servo, long nanoseconds) {
+    write_servo(30, left_servo, 1); //stop bot
+    write_servo(30, right_servo, 0);
+    nanosleep((const struct timespec[]){{0, nanoseconds}}, NULL); //delay of 100 milliseconds
+}
+
+
+
 //PSEUDO CODE TO ALLOW FOR REVERSE WITHIN THE DRIVE_STRAIGHT_ULTRASONIC
 
 /*
@@ -206,6 +224,10 @@ if(fwd == 0)
 else
     angle = angle
 */
+
+
+
+
 
 
 

@@ -101,34 +101,34 @@ int main(void) {
 
     // **************  MAIN CODE STRUCTURE  *******************//
 
+    int driveway_length = 150; //how far it goes from wall
+    int wall_limit = 20; //how close it gets to the wall before initiating turn
+    int cutoff = 20; //distance from sidewall to stop running plow routine
+
     //wait for push button
     while (1) {
         if (*push_button) {
             break;
         }
     }
-    int driveway_length = 500;
+    sleep(2); //delay after button pressed
 
-    //drive straight until it stops
-    drive_straight_ultrasonic (35, left_servo, right_servo, left_servo_encoder, right_servo_encoder, driveway_length)
-    //add quick fwd then quick reverse function to spin wheel
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    while(1) {
+        //drive straight until it stops
+        drive_straight_ultrasonic(35, left_servo, right_servo, left_servo_encoder, right_servo_encoder, driveway_length);
+        //check to see when to break
+        if(query_weighted_distances(1) < cutoff){ break;}
+        //quick transition to reverse
+        fwd_to_rev(left_servo, right_servo);
+        //drive reverse until set distance from wall
+        drive_straight_ultrasonic(-35, left_servo, right_servo, left_servo_encoder, right_servo_encoder, wall_limit);
+        //right turn
+        turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 90, 0);
+        //go straight for one second
+        fwd_for_time(left_servo, right_servo, 1000000000);
+        //left turn
+        turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, 90, 1);
+    }
 
 
 }

@@ -1,6 +1,7 @@
 #include "physical_address_access.h"
 #include "servo_drive_functions.h"
 
+
 float sensor1_old;
 float sensor2_old;
 
@@ -109,11 +110,13 @@ void hardcode_right(int *left_servo, int *right_servo){
     write_servo(0, left_servo, 0);
     write_servo(0, right_servo, 0);
 }
-// float turn_hardcode(volatile int *left_servo, volatile int *right_servo, long time, int dir){ //dir = 1 is right turn
-//     write_servo(0, left_servo, 1); //stop bot
-//     write_servo((dir ? 30 : -30),right_servo, 0);
-//     nanosleep((const struct timespec[]){{0, nanoseconds}}, NULL); //delay of 100 milliseconds
-// }
+
+
+float turn_hardcode(volatile int *left_servo, volatile int *right_servo, long time, int dir){ //dir = 1 is right turn
+     write_servo(0, left_servo, 1); //stop bot
+     write_servo((dir ? 30 : -30),right_servo, 0);
+     nanosleep((const struct timespec[]){{0, time}}, NULL); //delay of 100 milliseconds
+ }
 
 
 float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
@@ -191,36 +194,45 @@ int drive_straight (int inpspeed, volatile int *left_servo, volatile int *right_
 }
 
 
-// void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder, float stop_distance){
-//     float initial_lateral_dist = query_weighted_distances(1); //initial distance from wall
-//     float backward_dist;
-//     nanosleep((const struct timespec[]){{0, 100000000L}}, NULL); //delay of 100 milliseconds
+ void drive_straight_ultrasonic (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder, float stop_distance){
+     float initial_lateral_dist = query_weighted_distances(1); //initial distance from wall
+     float backward_dist;
+     nanosleep((const struct timespec[]){{0, 100000000L}}, NULL); //delay of 100 milliseconds
 
-//     while(backward_dist < stop_distance){ //continue the loop until the plow is at the end of the driveway
-//         int distance_sum = 0; //distance travelled since last query of distance from edge of driveway
-//         int i = 0;
-//         //drive for one second using encoder to correct direction
-//         for(i = 0; i < 20; i++){ //loop 20 times, 50ms per iteration, equal to 1 second
-//             distance_sum += drive_straight(inpspeed, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
-//         }
-//         //float distance_travelled = WHEEL_CIRCUMFERENCE * distance_sum; //distance travelled in cm
-//         float lateral_dist_change = query_weighted_distances(1) - initial_lateral_dist; //amount of lateral change over one second drive
-//         float distance_travelled = query_weighted_distances(2) - backward_dist;
-//         //lateral distance change negative - bot has drifted right
-//         //lateral distance change positive - bot has drifted left
-//         float tan_ratio = lateral_dist_change / distance_travelled;
-//         float angle_deg = (atan ((double)tan_ratio) * 180) / PI;
-//         printf("the angle being drive is: %f", angle_deg);
-//         //correction of direction, assumes turn function changes BOT DIRECTION by ANGLE input
+     while(backward_dist < stop_distance){ //continue the loop until the plow is at the end of the driveway
+         int distance_sum = 0; //distance travelled since last query of distance from edge of driveway
+         int i = 0;
+         //drive for one second using encoder to correct direction
+         for(i = 0; i < 20; i++){ //loop 20 times, 50ms per iteration, equal to 1 second
+             distance_sum += drive_straight(inpspeed, left_servo, right_servo, left_servo_encoder, right_servo_encoder);
+         }
+         //float distance_travelled = WHEEL_CIRCUMFERENCE * distance_sum; //distance travelled in cm
+         float lateral_dist_change = query_weighted_distances(1) - initial_lateral_dist; //amount of lateral change over one second drive
+         float distance_travelled = query_weighted_distances(2) - backward_dist;
+         //lateral distance change negative - bot has drifted right
+         //lateral distance change positive - bot has drifted left
+         float tan_ratio = lateral_dist_change / distance_travelled;
+         float angle_deg = (atan((double)tan_ratio) * 180) / PI;
+         printf("the angle being drive is: %f", angle_deg);
+         //correction of direction, assumes turn function changes BOT DIRECTION by ANGLE input
 
-//         write_servo(0, left_servo, 1); //stop bot
-//         write_servo(0, right_servo, 0);
-//         sleep(1);
-//         turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, angle_deg, 0); //adjust angle
-//         float backward_dist = query_weighted_distances(2); //senses when to break out of loop
-//     }
-//     printf("Reached end\n");
-// }
+         write_servo(0, left_servo, 1); //stop bot
+         write_servo(0, right_servo, 0);
+         sleep(1);
+         turn(left_servo_encoder, right_servo_encoder, left_servo, right_servo, angle_deg, 0); //adjust angle
+
+         if(angle_deg > 0){ //right turn
+             int dir = 1;
+             float time = angle_deg * (2.45 / 90);
+         }else{ //left turn
+             int dir = 0;
+             float time = angle_deg * (1.72 / 90);
+         }
+         float turn_hardcode(left_servo, right_servo, long time, int dir); //dir = 1 is right turn
+         float backward_dist = query_weighted_distances(2); //senses when to break out of loop
+     }
+     printf("Reached end\n");
+ }
 
 
 void fwd_to_rev(int *left_servo, int *right_servo) {

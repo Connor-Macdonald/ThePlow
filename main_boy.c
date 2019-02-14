@@ -65,10 +65,23 @@ int main(void) {
 
     write_servo(0, left_servo, 1);
     write_servo(0, right_servo, 0);
-    while(1){
-        if(*push_button){
-            break;
+    int i;
+    for(i = 0; i < 5; i++){
+        while(1){
+            if(*push_button){
+                break;
+            }
         }
+
+        while(1){
+            write_servo(35, left_servo, 1);
+            write_servo(43, right_servo, 0);
+            if(query_weighted_distances(2) > 100){
+                break;
+            }
+        }
+        write_servo(0, left_servo, 1);
+        write_servo(0, right_servo, 0);
     }
 
     printf("Killing Thread\n");

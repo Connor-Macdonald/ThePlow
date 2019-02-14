@@ -10,7 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bdd1d223-10e1-4792-ab33-b3afd58979fb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main_boy.c" beforeDir="false" afterPath="$PROJECT_DIR$/main_boy.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/servo_drive_functions.c" beforeDir="false" afterPath="$PROJECT_DIR$/servo_drive_functions.c" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
@@ -51,7 +51,7 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="c" value="6077" />
+          <entry key="c" value="6238" />
           <entry key="cpp" value="114" />
           <entry key="h" value="319" />
           <entry key="txt" value="85" />
@@ -60,7 +60,7 @@
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CMakeLists.txt" value="23" />
-          <entry key="ObjectiveC" value="6510" />
+          <entry key="ObjectiveC" value="6671" />
           <entry key="PLAIN_TEXT" value="62" />
         </counts>
       </usages-collector>
@@ -71,8 +71,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main_boy.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="17" selection-start-line="17" selection-end-line="17" />
+            <state relative-caret-position="192">
+              <caret line="98" lean-forward="true" selection-start-line="98" selection-end-line="98" />
             </state>
           </provider>
         </entry>
@@ -80,8 +80,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/servo_drive_functions.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="701">
-              <caret line="234" lean-forward="true" selection-start-line="234" selection-end-line="234" />
+            <state relative-caret-position="792">
+              <caret line="131" lean-forward="true" selection-start-line="131" selection-end-line="131" />
               <folding>
                 <element signature="e#0#36#0" expanded="true" />
               </folding>
@@ -140,8 +140,8 @@
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/main_bitch.py" />
         <option value="$PROJECT_DIR$/servo_drive_functions.h" />
-        <option value="$PROJECT_DIR$/main_boy.c" />
         <option value="$PROJECT_DIR$/servo_drive_functions.c" />
+        <option value="$PROJECT_DIR$/main_boy.c" />
       </list>
     </option>
   </component>
@@ -334,7 +334,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16309012" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -460,13 +459,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main_boy.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/servo_drive_functions.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="235">
@@ -474,10 +466,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/main_boy.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="98" lean-forward="true" selection-start-line="98" selection-end-line="98" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/servo_drive_functions.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="701">
-          <caret line="234" lean-forward="true" selection-start-line="234" selection-end-line="234" />
+        <state relative-caret-position="792">
+          <caret line="131" lean-forward="true" selection-start-line="131" selection-end-line="131" />
           <folding>
             <element signature="e#0#36#0" expanded="true" />
           </folding>

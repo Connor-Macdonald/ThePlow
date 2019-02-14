@@ -93,7 +93,7 @@ void turn(volatile int *left_servo_encoder,
     write_servo(0,right_servo,1);
 }
 
-void hardcode_left(){
+void hardcode_left(int *left_servo, int *right_servo){
     write_servo(0, left_servo, 0);
     write_servo(0, right_servo, 0);
     write_servo(30, right_servo, 0);
@@ -102,7 +102,7 @@ void hardcode_left(){
     write_servo(0, right_servo, 0);
 }
 
-void hardcode_right(){
+void hardcode_right(int *left_servo, int *right_servo){
     write_servo(0, left_servo, 0);
     write_servo(0, right_servo, 0);
     write_servo(30, right_servo, 1);
@@ -154,7 +154,7 @@ float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
     }
 }
 
-int drive_straight (int inpspeed, int *left_servo, int *right_servo, int *left_servo_encoder, int *right_servo_encoder){
+int drive_straight (int inpspeed, volatile int *left_servo, volatile int *right_servo, volatile int *left_servo_encoder, volatile int *right_servo_encoder){
     float jerkiness = 0.4; //value between 0-1 to monitor how big driving adjustments are
     int r_speed; //right servo speed, to be adjusted later in function
 

@@ -89,7 +89,43 @@ int main(void) {
         }
         sleep(2); //delay after button pressed
         while (1) {
-
+            //drive straight until it stops
+            //straight_hardcode(left_servo, right_servo, 50);
+            //check to see when to break
+            write_servo(35, left_servo, 1); //stop bot
+            write_servo(43, right_servo, 0);
+            sleep(4);
+            if (query_weighted_distances(1) < cutoff) { break; }
+            //quick transition to reverse
+            if (*push_button) {
+                while(!*push_button) {}
+                    break;
+            }
+            fwd_to_rev(left_servo, right_servo);
+            //drive reverse until set distance from wall
+            if (*push_button) {
+                while(!*push_button) {}
+                    break;
+            }
+            //reverse_hardcode(left_servo, right_servo, 15);
+            //right turn
+            if (*push_button) {
+                while(!*push_button) {}
+                    break;
+            }
+            write_servo(-43, left_servo, 1); //reverse bot
+            write_servo(-35, right_servo, 0);
+            nanosleep((const struct timespec[]){{4, 300000000}}, NULL); //time for reverse
+            hardcode_right(left_servo, right_servo);
+            //go straight for one second
+            if (*push_button) {
+                while(!*push_button) {}
+                    break;
+            }
+            write_servo(30, left_servo, 1); //horizontal move forward
+            write_servo(38, right_servo, 0);
+            nanosleep((const struct timespec[]){{0, 999999999}}, NULL); 
+            //left turn
             //testing zone for sensor drive functions
 
             write_servo(35, left_servo, 1);

@@ -31,10 +31,21 @@ struct Dist_sensor
     volatile int *backwards_sensor;
 };
 
+struct Encoder_sensor{
+    volatile int *left_encoder;
+    volatile int *right_encoder;
+};
+
 void *sensor_thread(void *sensors){
     struct Dist_sensor *thread_sensors = (struct Dist_sensor*)sensors;
     printf("IN THREAD");
     weighted_distance_sensor((*thread_sensors).sideways_sensor, (*thread_sensors).backwards_sensor);
+}
+
+void *encoderThread(void *encoder){
+    struct Encoder_sensor *thread_encoder = (struct Encoder_sensor*)encoder;
+    printf("IN THREAD");
+    weighted_encoder_fb((*thread_encoder).left_encoder, (*thread_encoder).right_encoder);
 }
 
 int main(void) {
@@ -55,16 +66,28 @@ int main(void) {
     volatile int *dist_2 = (int *) (LW_virtual + DIST_SENSOR_2);
     volatile int *push_button = (int *) (LW_virtual + 0x00000050);
 
-    struct Dist_sensor sensors; //pass both sensors to thread
+    //pass both sensors to thread
+    struct Dist_sensor sensors; 
     sensors.sideways_sensor = dist_1;
     sensors.backwards_sensor = dist_2;
 
-    pthread_t thread1;
+    //pass both sensors to thread for encoders
+    struct Encoder_sensor encoder;
+    encoder.left_encoder = left_servo_encoder;
+    encoder.right_encoder = right_servo_encoder;
+
+
+    
     write_servo(0, left_servo, 1);
     write_servo(0, right_servo, 0);
+
     printf("Starting thread\n");
+    pthread_t thread1;
     pthread_create(&thread1, NULL, sensor_thread, (void *) &sensors);
-    printf("Hello? \n");
+
+    printf("Starting thread Num 2\n");
+    pthread_t thread2;
+    pthread_create(&thread2, NULL, encoderThread, (void *) &encoder);
     
 
     // **************  MAIN CODE STRUCTURE  *******************//
@@ -94,8 +117,10 @@ int main(void) {
 
             write_servo(35, left_servo, 1);
             write_servo(35, right_servo, 1);
-            printf("Right Encoder: %f\n", read_servo_pos(right_servo_encoder));
-            printf("Left Encoder: %f\n", read_servo_pos(left_servo_encoder));
+
+            sleep(1);
+            printf("Right Encoder: %f\n", query_weighted_encoder(right_servo_encoder));
+            printf("Left Encoder: %f\n", query_weighted_encoder(left_servo_encoder));
 
                 //drive straight until it stops
 //            //straight_hardcode(left_servo, right_servo, 50);
@@ -140,8 +165,15 @@ int main(void) {
             }
 
         }
+         if (*push_button) {
+                while(!*push_button) {}
+                    break;
+            }
     }
 
+    //Stopping plow
+    write_servo(0, left_servo, 1);
+    write_servo(0, right_servo, 0);
 
     printf("Killing Thread\n");
     killWhile();

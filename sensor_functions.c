@@ -1,5 +1,5 @@
 #include "sensor_functions.h"
-#include "queue.c"
+//#include "queue.c"
 
 int stopWhile = 1;
 
@@ -114,7 +114,7 @@ float query_weighted_encoder(int wheel){
         float sum;
         int i = 0;
         for(i = 0; i < encoderQueueSize; i ++){
-            sum = sum + queue1->array[i];
+            sum = sum + queue3->array[i];
         }
         return sum/encoderQueueSize;
     }
@@ -122,7 +122,7 @@ float query_weighted_encoder(int wheel){
         float sum;
         int i = 0;
         for(i = 0; i < encoderQueueSize; i ++){
-            sum = sum + queue2->array[i];
+            sum = sum + queue4->array[i];
         }
         return sum/encoderQueueSize;
     }

@@ -43,7 +43,7 @@ volatile int encoder_pointer: pointer to servo encoder address
 OUTPUT: angle of servo at time requested
 Reads the duty cycle of the encoder and calculates its angle 
 */
-float read_servo_pos (volatile int *);
+//float read_servo_pos (volatile int *);
 
 float read_servo_direct (volatile int *);
 

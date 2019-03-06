@@ -9,7 +9,7 @@ struct Queue* queue3; //left wheel queue
 struct Queue* queue4; //right wheel queue
 int queueNum = 15;
 int old_side = 0;
-int encoderQueueSize = 10;
+int encoderQueueSize = 5;
 
 
 float read_distance_sensor(volatile int *sensor_pointer){
@@ -89,6 +89,25 @@ float read_servo_direct(volatile int *encoder_pointer){
 //    return x;
 //}
 
+float get_median(float array, int size) {
+    int i=0 , j=0 , temp=0;
+
+    for(i=0 ; i<size ; i++)
+    {
+        for(j=0 ; j<size-1 ; j++)
+        {
+            if(array[j]>array[j+1])
+            {
+                temp        = array[j];
+                array[j]    = array[j+1];
+                array[j+1]  = temp;
+            }
+        }
+    }
+    int middle = size / 2;
+    return array[middle];
+}
+
 
 void weighted_encoder_fb(volatile int *left_servo_encoder, volatile int *right_servo_encoder){
     queue3 = createQueue(encoderQueueSize);
@@ -111,20 +130,20 @@ void weighted_encoder_fb(volatile int *left_servo_encoder, volatile int *right_s
 
 float query_weighted_encoder(int wheel){
     if(wheel == 1){  //left side is wheel 1
-        float sum;
+        float queueArr[encoderQueueSize];
         int i = 0;
         for(i = 0; i < encoderQueueSize; i ++){
-            sum = sum + queue3->array[i];
+            queueArr[i] = queue3->array[i];
         }
-        return sum/encoderQueueSize;
+        return get_median(queueArr, encoderQueueSize);
     }
     else if(wheel == 2){  //right side is wheel 2
-        float sum;
+        float queueArr[encoderQueueSize];
         int i = 0;
         for(i = 0; i < encoderQueueSize; i ++){
-            sum = sum + queue4->array[i];
+            queueArr[i] = queue3->array[i];
         }
-        return sum/encoderQueueSize;
+        return get_median(queueArr, encoderQueueSize);
     }
     return 0;
 }

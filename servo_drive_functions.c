@@ -44,7 +44,7 @@ float babs(float first, float second){
     }
 }
 
-
+/*
 // Dir = 1 -> forward
 void turn(volatile int *left_servo_encoder, 
           volatile int *right_servo_encoder, 
@@ -59,6 +59,7 @@ void turn(volatile int *left_servo_encoder,
     float prevEncode = read_servo_pos(right_servo_encoder);
     float diff = 0.0;
     while(diff < targetChange){
+
         encodeR = read_servo_pos(right_servo_encoder);
         while((babs(encodeR,prevEncode) >= 4) && (babs(encodeR,prevEncode) <= 345)){ // ensure readings are accurate
             encodeR = read_servo_pos(right_servo_encoder);
@@ -82,6 +83,7 @@ void turn(volatile int *left_servo_encoder,
     write_servo(0,left_servo,1);
     write_servo(0,right_servo,1);
 }
+*/
 
 void hardcode_left(volatile int *left_servo, volatile int *right_servo){
     write_servo(0, left_servo, 0);
@@ -132,7 +134,7 @@ float turn_hardcode(volatile int *left_servo, volatile int *right_servo, long ti
      nanosleep((const struct timespec[]){{0, time}}, NULL); //delay of 100 milliseconds
  }
 
-
+/*
 float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
     float current_sensor = read_servo_pos(encoder_pointer);
     if(sensor == 1){
@@ -148,6 +150,7 @@ float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
             sensor2_old = current_sensor;
     }
 }
+*/
 
 //int drive_straight (int inpspeed, volatile int *left_servo, volatile int *right_servo, volatile int *left_servo_encoder, volatile int *right_servo_encoder){
 //    float jerkiness = 0.4; //value between 0-1 to monitor how big driving adjustments are

@@ -119,8 +119,7 @@ int main(void) {
             write_servo(35, right_servo, 1);
 
             sleep(1);
-            printf("Right Encoder: %f\n", query_weighted_encoder(right_servo_encoder));
-            printf("Left Encoder: %f\n", query_weighted_encoder(left_servo_encoder));
+            printf("Right Encoder: %f, Left Encoder: %f\n", query_weighted_encoder(2), query_weighted_encoder(1));
 
                 //drive straight until it stops
 //            //straight_hardcode(left_servo, right_servo, 50);

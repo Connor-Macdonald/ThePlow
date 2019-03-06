@@ -89,7 +89,7 @@ float read_servo_direct(volatile int *encoder_pointer){
 //    return x;
 //}
 
-float get_median(float array, int size) {
+float get_median(float *array, int size) {
     int i=0 , j=0 , temp=0;
 
     for(i=0 ; i<size ; i++)
@@ -129,21 +129,21 @@ void weighted_encoder_fb(volatile int *left_servo_encoder, volatile int *right_s
 
 
 float query_weighted_encoder(int wheel){
+    float queueArr1[encoderQueueSize];
+    float queueArr2[encoderQueueSize];
     if(wheel == 1){  //left side is wheel 1
-        float queueArr[encoderQueueSize];
         int i = 0;
         for(i = 0; i < encoderQueueSize; i ++){
-            queueArr[i] = queue3->array[i];
+            queueArr1[i] = queue3->array[i];
         }
-        return get_median(queueArr, encoderQueueSize);
+        return get_median(queueArr1, encoderQueueSize);
     }
     else if(wheel == 2){  //right side is wheel 2
-        float queueArr[encoderQueueSize];
         int i = 0;
         for(i = 0; i < encoderQueueSize; i ++){
-            queueArr[i] = queue3->array[i];
+            queueArr2[i] = queue4->array[i];
         }
-        return get_median(queueArr, encoderQueueSize);
+        return get_median(queueArr2, encoderQueueSize);
     }
     return 0;
 }

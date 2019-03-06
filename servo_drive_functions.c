@@ -97,7 +97,7 @@ void hardcode_left(volatile int *left_servo, volatile int *right_servo){
     write_servo(0, left_servo, 0);
     write_servo(0, right_servo, 0);
     write_servo(30, right_servo, 0);
-    nanosleep((const struct timespec[]){{2, 450000000L}}, NULL);
+    nanosleep((const struct timespec[]){{2, 550000000L}}, NULL);
     write_servo(0, left_servo, 0);
     write_servo(0, right_servo, 0);
 }
@@ -260,11 +260,11 @@ float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
 
 
 void fwd_to_rev(int volatile *left_servo, int volatile *right_servo) {
-    write_servo(100, left_servo, 1); //stop bot
-    write_servo(100, right_servo, 0);
+    write_servo(80, left_servo, 1); //stop bot
+    write_servo(80, right_servo, 0);
     nanosleep((const struct timespec[]){{0, 500000000L}}, NULL); //delay of 500 milliseconds
-    write_servo(-100, left_servo, 1); //stop bot
-    write_servo(-100, right_servo, 0);
+    write_servo(-80, left_servo, 1); //stop bot
+    write_servo(-80, right_servo, 0);
     nanosleep((const struct timespec[]){{0, 500000000L}}, NULL); //delay of 500 milliseconds
 }
 

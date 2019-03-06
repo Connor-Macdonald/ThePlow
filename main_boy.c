@@ -107,24 +107,24 @@ int main(void) {
                 while(!*push_button) {}
                     break;
             }
-            reverse_hardcode(left_servo, right_servo, 15);
+            //reverse_hardcode(left_servo, right_servo, 15);
             //right turn
             if (*push_button) {
                 while(!*push_button) {}
                     break;
             }
-            write_servo(-35, left_servo, 1); //stop bot
-            write_servo(-27, right_servo, 0);
-            sleep(4);
-            //hardcode_right(left_servo, right_servo);
+            write_servo(-43, left_servo, 1); //reverse bot
+            write_servo(-35, right_servo, 0);
+            nanosleep((const struct timespec[]){{4, 300000000}}, NULL); //time for reverse
+            hardcode_right(left_servo, right_servo);
             //go straight for one second
             if (*push_button) {
                 while(!*push_button) {}
                     break;
             }
-            write_servo(30, left_servo, 1); //stop bot
+            write_servo(30, left_servo, 1); //horizontal move forward
             write_servo(38, right_servo, 0);
-            nanosleep((const struct timespec[]){{1, 999999999}}, NULL); 
+            nanosleep((const struct timespec[]){{0, 999999999}}, NULL); 
             //left turn
             if (*push_button) {
                 while(!*push_button) {}

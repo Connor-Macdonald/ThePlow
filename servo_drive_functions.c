@@ -62,10 +62,11 @@ float read_servo_direct(volatile int *encoder_pointer){
 
 
 float read_servo_pos (volatile int *encoder_pointer) {
+    float x  = 0.0;
     x = read_servo_direct(encoder_pointer);
     while(x < 0 || x > 359){  // initiates a re-read of the encoder if it is not within the desired ranges
         x = read_servo_direct(encoder_pointer);
-        fprintf("Re-read required\n");
+        printf("Re-read required\n");
     }
     return x;
 }
@@ -149,6 +150,7 @@ void reverse_hardcode(volatile int *left_servo, volatile int *right_servo, int w
             break;
     }
 }
+
 
 
 float turn_hardcode(volatile int *left_servo, volatile int *right_servo, long time, int dir){ //dir = 1 is right turn

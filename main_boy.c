@@ -89,6 +89,7 @@ int main(void) {
         }
         sleep(2); //delay after button pressed
         while (1) {
+<<<<<<< HEAD
             //drive straight until it stops
             //straight_hardcode(left_servo, right_servo, 50);
             //check to see when to break
@@ -126,6 +127,52 @@ int main(void) {
             write_servo(38, right_servo, 0);
             nanosleep((const struct timespec[]){{0, 999999999}}, NULL); 
             //left turn
+=======
+            //testing zone for sensor drive functions
+
+            write_servo(35, left_servo, 1);
+            write_servo(35, right_servo, 1);
+            fprintf("Right Encoder: %f\n", read_servo_pos(right_servo_encoder));
+            fprintf("Left Encoder: %f\n", read_servo_pos(left_servo_encoder));
+
+                //drive straight until it stops
+//            //straight_hardcode(left_servo, right_servo, 50);
+//            //check to see when to break
+//            write_servo(35, left_servo, 1); //stop bot
+//            write_servo(43, right_servo, 0);
+//            sleep(4);
+//            if (query_weighted_distances(1) < cutoff) { break; }
+//            //quick transition to reverse
+//            if (*push_button) {
+//                while(!*push_button) {}
+//                    break;
+//            }
+//            fwd_to_rev(left_servo, right_servo);
+//            //drive reverse until set distance from wall
+//            if (*push_button) {
+//                while(!*push_button) {}
+//                    break;
+//            }
+//            reverse_hardcode(left_servo, right_servo, 15);
+//            //right turn
+//            if (*push_button) {
+//                while(!*push_button) {}
+//                    break;
+//            }
+//            write_servo(-35, left_servo, 1); //stop bot
+//            write_servo(-27, right_servo, 0);
+//            sleep(4);
+//
+//            if (*push_button) {
+//                while(!*push_button) {}
+//                    break;
+//            }
+//
+//            write_servo(30, left_servo, 1); //stop bot
+//            write_servo(38, right_servo, 0);
+//            nanosleep((const struct timespec[]){{1, 999999999}}, NULL); //left turn
+
+>>>>>>> 47e1ea6dd676efc72b1eaa5c9c878eee43e3aeb8
             if (*push_button) {
                 while(!*push_button) {}
                     break;
@@ -137,6 +184,8 @@ int main(void) {
             }
         }
     }
+
+
     printf("Killing Thread\n");
     killWhile();
     if (pthread_join(thread1, NULL)) {

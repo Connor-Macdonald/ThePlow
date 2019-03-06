@@ -44,17 +44,33 @@ float babs(float first, float second){
     }
 }
 
-float read_servo_pos (volatile int *encoder_pointer) {
+float read_servo_direct(volatile int *encoder_pointer){
     int unitsFC = 360;
     float high_micro = (*encoder_pointer) / 100;
     float duty_cycle = 100 * (high_micro / ENCODER_PERIOD);
     float theta = ((duty_cycle - DUTY_CYCLE_MIN) * CIRCLE_UNITS) / (DUTY_CYCLE_MAX - DUTY_CYCLE_MIN + 1);
-    if(theta < 0){
-        theta = 0;
-    } 
-    else if(theta > (unitsFC - 1)) theta = unitsFC - 1;
+//    if(theta < 0){
+//        theta = 0;
+//        fprintf("under zero");
+//    }
+//    else if(theta > (unitsFC - 1)){
+//        theta = unitsFC - 1;
+//        fprintf("over 360 degrees");
+//    }
     return theta;
 }
+
+
+float read_servo_pos (volatile int *encoder_pointer) {
+    x = read_servo_direct(encoder_pointer);
+    while(x < 0 || x > 359){  // initiates a re-read of the encoder if it is not within the desired ranges
+        x = read_servo_direct(encoder_pointer);
+        fprintf("Re-read required\n");
+    }
+    return x;
+}
+
+
 // Dir = 1 -> forward
 void turn(volatile int *left_servo_encoder, 
           volatile int *right_servo_encoder, 

@@ -151,7 +151,6 @@ void reverse_hardcode(volatile int *left_servo, volatile int *right_servo, int w
 }
 
 
-
 float turn_hardcode(volatile int *left_servo, volatile int *right_servo, long time, int dir){ //dir = 1 is right turn
      write_servo(0, left_servo, 1); //stop bot
      write_servo((dir ? 30 : -30),right_servo, 0);

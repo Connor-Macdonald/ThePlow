@@ -91,10 +91,10 @@ int main(void) {
         while (1) {
             //testing zone for sensor drive functions
 
-
+            write_servo(35, left_servo, 1);
+            write_servo(35, right_servo, 1);
             fprintf("Right Encoder: %f\n", read_servo_pos(right_servo_encoder));
             fprintf("Left Encoder: %f\n", read_servo_pos(left_servo_encoder));
-
 
                 //drive straight until it stops
 //            //straight_hardcode(left_servo, right_servo, 50);

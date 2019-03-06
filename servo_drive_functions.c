@@ -65,6 +65,7 @@ float read_servo_pos (volatile int *encoder_pointer) {
     x = read_servo_direct(encoder_pointer);
     while(x < 0 || x > 359){  // initiates a re-read of the encoder if it is not within the desired ranges
         x = read_servo_direct(encoder_pointer);
+        fprintf("Re-read required\n");
     }
     return x;
 }

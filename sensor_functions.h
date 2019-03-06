@@ -13,6 +13,11 @@ Reads the pluse time of the sensor and calculates the distance recorded
 */
 float read_distance_sensor(volatile int *);
 
+
+float read_servo_pos (volatile int *);
+
+float read_servo_direct (volatile int *);
+
 /*
 Create two queues for distance sensor values
 PARAMETER

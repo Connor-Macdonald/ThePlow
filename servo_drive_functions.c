@@ -216,7 +216,7 @@ float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
 //            speed_multiplier = 1;
 //        }
 //        r_speed = inpspeed * (1 + speed_multiplier*jerkiness);
-////        printf("right wheel SPED UP");
+//        printf("right wheel SPED UP");
 //    }
 //    else{
 //        float speed_multiplier = (theta_l_diff - theta_r_diff) / theta_r_diff;
@@ -224,7 +224,7 @@ float read_servo_pos_outlier(volatile int *encoder_pointer, int sensor){
 //            speed_multiplier = 0.9;
 //        }
 //        r_speed = inpspeed * (1 - speed_multiplier*jerkiness);
-////        printf("right wheel slowed down\n");
+//        printf("right wheel slowed down\n");
 //    }
 //
 //    write_servo(inpspeed, left_servo, 1);

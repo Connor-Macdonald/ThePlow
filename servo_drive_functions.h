@@ -45,6 +45,8 @@ Reads the duty cycle of the encoder and calculates its angle
 */
 float read_servo_pos (volatile int *);
 
+float read_servo_direct (volatile int *);
+
 
 //does a quick transition from fwd to reverse to transition back wheel
 void fwd_to_rev(volatile int *, volatile int *);

@@ -89,43 +89,50 @@ int main(void) {
         }
         sleep(2); //delay after button pressed
         while (1) {
-            //drive straight until it stops
-            //straight_hardcode(left_servo, right_servo, 50);
-            //check to see when to break
-            write_servo(35, left_servo, 1); //stop bot
-            write_servo(43, right_servo, 0);
-            sleep(4);
-            if (query_weighted_distances(1) < cutoff) { break; }
-            //quick transition to reverse
-            if (*push_button) {
-                while(!*push_button) {}
-                    break;
-            }
-            fwd_to_rev(left_servo, right_servo);
-            //drive reverse until set distance from wall
-            if (*push_button) {
-                while(!*push_button) {}
-                    break;
-            }
-            reverse_hardcode(left_servo, right_servo, 15);
-            //right turn
-            if (*push_button) {
-                while(!*push_button) {}
-                    break;
-            }
-            write_servo(-35, left_servo, 1); //stop bot
-            write_servo(-27, right_servo, 0);
-            sleep(4);
-            //hardcode_right(left_servo, right_servo);
-            //go straight for one second
-            if (*push_button) {
-                while(!*push_button) {}
-                    break;
-            }
-            write_servo(30, left_servo, 1); //stop bot
-            write_servo(38, right_servo, 0);
-            nanosleep((const struct timespec[]){{1, 999999999}}, NULL); 
-            //left turn
+            //testing zone for sensor drive functions
+
+
+            fprintf("Right Encoder: %f\n", read_servo_pos(right_servo_encoder));
+            fprintf("Left Encoder: %f\n", read_servo_pos(left_servo_encoder));
+
+
+                //drive straight until it stops
+//            //straight_hardcode(left_servo, right_servo, 50);
+//            //check to see when to break
+//            write_servo(35, left_servo, 1); //stop bot
+//            write_servo(43, right_servo, 0);
+//            sleep(4);
+//            if (query_weighted_distances(1) < cutoff) { break; }
+//            //quick transition to reverse
+//            if (*push_button) {
+//                while(!*push_button) {}
+//                    break;
+//            }
+//            fwd_to_rev(left_servo, right_servo);
+//            //drive reverse until set distance from wall
+//            if (*push_button) {
+//                while(!*push_button) {}
+//                    break;
+//            }
+//            reverse_hardcode(left_servo, right_servo, 15);
+//            //right turn
+//            if (*push_button) {
+//                while(!*push_button) {}
+//                    break;
+//            }
+//            write_servo(-35, left_servo, 1); //stop bot
+//            write_servo(-27, right_servo, 0);
+//            sleep(4);
+//
+//            if (*push_button) {
+//                while(!*push_button) {}
+//                    break;
+//            }
+//
+//            write_servo(30, left_servo, 1); //stop bot
+//            write_servo(38, right_servo, 0);
+//            nanosleep((const struct timespec[]){{1, 999999999}}, NULL); //left turn
+
             if (*push_button) {
                 while(!*push_button) {}
                     break;
@@ -137,6 +144,8 @@ int main(void) {
             }
         }
     }
+
+
     printf("Killing Thread\n");
     killWhile();
     if (pthread_join(thread1, NULL)) {

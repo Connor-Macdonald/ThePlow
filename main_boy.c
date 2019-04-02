@@ -24,9 +24,9 @@
 #define DIST_SENSOR_1 0x00000040
 #define DIST_SENSOR_2 0x00000048
 
+
 struct Dist_sensor
 {
-   /* data */
     volatile int *sideways_sensor;
     volatile int *backwards_sensor;
 };
@@ -36,12 +36,14 @@ struct Encoder_sensor{
     volatile int *right_encoder;
 };
 
+
+//initialization of thread to query distance sensor
 void *sensor_thread(void *sensors){
     struct Dist_sensor *thread_sensors = (struct Dist_sensor*)sensors;
-    printf("IN THREAD");
     weighted_distance_sensor((*thread_sensors).sideways_sensor, (*thread_sensors).backwards_sensor);
 }
 
+//initialization of thread to read servo encoders
 void *encoderThread(void *encoder){
     struct Encoder_sensor *thread_encoder = (struct Encoder_sensor*)encoder;
     printf("IN THREAD");
@@ -49,7 +51,6 @@ void *encoderThread(void *encoder){
 }
 
 int main(void) {
-    printf("START\n");
     // Initialization of FPGA bridge
     int fd = -1; // used to open /dev/mem
     void *LW_virtual; // physical addresses for light-weight bridge
@@ -57,7 +58,7 @@ int main(void) {
     if ((fd = open_physical(fd)) == -1) return (-1);
     if (!(LW_virtual = map_physical(fd, LW_BRIDGE_BASE, LW_BRIDGE_SPAN))) return (-1);
 
-    // Initialize all the nessacary virtual address pointers
+    // Initialize all the necessary virtual address pointers
     volatile int *left_servo = (unsigned int *) (LW_virtual + LEFT_SERVO);
     volatile int *right_servo = (unsigned int *) (LW_virtual + RIGHT_SERVO);
     volatile int *left_servo_encoder = (int *) (LW_virtual + LEFT_SERVO_ENCODER);
@@ -76,30 +77,27 @@ int main(void) {
     encoder.left_encoder = left_servo_encoder;
     encoder.right_encoder = right_servo_encoder;
 
-
-    
+    //make sure the bot is initially at a standstill
     write_servo(0, left_servo, 1);
     write_servo(0, right_servo, 0);
 
-    printf("Starting thread\n");
+    //create thread 1
     pthread_t thread1;
     pthread_create(&thread1, NULL, sensor_thread, (void *) &sensors);
 
-    printf("Starting thread Num 2\n");
+    //create thread 2
     pthread_t thread2;
     pthread_create(&thread2, NULL, encoderThread, (void *) &encoder);
-    
+
 
     // **************  MAIN CODE STRUCTURE  *******************//
-
-    int driveway_length = 150; //how far it goes from wall
-    int wall_limit = 20; //how close it gets to the wall before initiating turn
-    int cutoff = 20; //distance from sidewall to stop running plow routine
+    int driveway_length = 150; //how far it goes from wall, in cm
+    int wall_limit = 20; //how close it gets to the wall before initiating turn, in cm
+    int cutoff = 20; //distance from sidewall to stop running plow routine, in cm
 
     //wait for push button
-    
     while(1){
-        sleep(2);
+        sleep(1);
         write_servo(0, left_servo, 1);
         write_servo(0, right_servo, 0);
         while (1) {
@@ -110,91 +108,56 @@ int main(void) {
                 return 0;
             }
         }
-        sleep(2); //delay after button pressed
+        sleep(1); //delay after button pressed
         while (1) {
-            
-            //testing zone for sensor drive functions
+            //drive forward function with ultrasonic turn correction
+            void drive_straight_ultrasonic (30, *left_servo, *right_servo, *left_servo_encoder, *right_servo_encoder, 150)
+            if (query_weighted_distances(1) < cutoff) { break; }
+            //quick transition to reverse to push snow off the end of the driveway
+            fwd_to_rev(left_servo, right_servo);
+            //drive reverse until set distance from wall with turn correction
+            void drive_straight_ultrasonic (-30, *left_servo, *right_servo, *left_servo_encoder, *right_servo_encoder, 150)
+            //right turn 90 degrees
+            void turn(*left_servo_encoder, *right_servo_encoder, *left_servo, *right_servo, 90, 1)
+            //go forward to setup next plow iteration
+            write_servo(30, left_servo, 1);
+            write_servo(38, right_servo, 0);
+            sleep(2);
+            //left turn 90 degrees
+            void turn(*left_servo_encoder, *right_servo_encoder, *left_servo, *right_servo, 90, 0)
 
-            write_servo(35, left_servo, 1);
-            write_servo(35, right_servo, 1);
 
-            sleep(1);
-            printf("Right Encoder: %f, Left Encoder: %f\n", query_weighted_encoder(2), query_weighted_encoder(1));
+            write_servo(30, left_servo, 1); //stop bot
+            write_servo(38, right_servo, 0);
+            nanosleep((const struct timespec[]){{1, 999999999}}, NULL); //left turn
 
-                //drive straight until it stops
-//            //straight_hardcode(left_servo, right_servo, 50);
-//            //check to see when to break
-//            write_servo(35, left_servo, 1); //stop bot
-//            write_servo(43, right_servo, 0);
-//            sleep(4);
-//            if (query_weighted_distances(1) < cutoff) { break; }
-//            //quick transition to reverse
-//            if (*push_button) {
-//                while(!*push_button) {}
-//                    break;
-//            }
-//            fwd_to_rev(left_servo, right_servo);
-//            //drive reverse until set distance from wall
-//            if (*push_button) {
-//                while(!*push_button) {}
-//                    break;
-//            }
-//            reverse_hardcode(left_servo, right_servo, 15);
-//            //right turn
-//            if (*push_button) {
-//                while(!*push_button) {}
-//                    break;
-//            }
-//            write_servo(-35, left_servo, 1); //stop bot
-//            write_servo(-27, right_servo, 0);
-//            sleep(4);
-//
-//            if (*push_button) {
-//                while(!*push_button) {}
-//                    break;
-//            }
-//
-//            write_servo(30, left_servo, 1); //stop bot
-//            write_servo(38, right_servo, 0);
-//            nanosleep((const struct timespec[]){{1, 999999999}}, NULL); //left turn
-
+            //breaking the out of the loop
             if (*push_button) {
                 while(!*push_button) {}
                     break;
             }
-
         }
+
+        //break out of function
          if (*push_button) {
                 while(!*push_button) {}
                     break;
-            }
+         }
     }
 
     //Stopping plow
     write_servo(0, left_servo, 1);
     write_servo(0, right_servo, 0);
 
-    printf("Killing Thread\n");
+    //kill thread
     killWhile();
     if (pthread_join(thread1, NULL)) {
         fprintf(stderr, "Error joining thread\n");
         return 2;
     }
 
+    //close bridge
     unmap_physical(LW_virtual, LW_BRIDGE_SPAN);
     close_physical(fd);
     return 0;
 }
-
-    /*// THREAD STUFF
-
-	//The arguments required for pthread_create():
-    //    pthread_t *thread: the actual thread object that contains pthread id
-    //    pthread_attr_t *attr: attributes to apply to this thread
-    //    void *(*start_routine)(void *): the function this thread executes
-    //    void *arg: arguments to pass to thread function above
-
-    //NOTE: when compiling: gcc main_boy.c -o main_boy -lpthread
-    // Unmap FPGA bridge
-    */
-   
